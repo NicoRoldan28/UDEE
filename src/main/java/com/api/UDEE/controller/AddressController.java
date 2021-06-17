@@ -29,7 +29,7 @@ public class AddressController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity newCountry(@RequestBody Address address){
+    public ResponseEntity newAddress(@RequestBody Address address){
         Address newAddress = addressService.newAddress(address);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -54,8 +54,9 @@ public class AddressController {
                 .header("X-Total-Pages", Long.toString(page.getTotalPages()))
                 .body(page.getContent());
     }
+
     @GetMapping(value = "{id}", produces = "application/json")
-    public ResponseEntity<Address> countriesByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
+    public ResponseEntity<Address> addressById(@PathVariable("id") Integer id) throws AddressNotExistsException {
         Address address = addressService.getAddressById(id);
         return ResponseEntity.ok(address);
     }

@@ -72,7 +72,6 @@ public class UsuarioController {
 
     @PostMapping(value = "auth/login2")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
-        //log.info(loginRequestDto.toString());
         Usuario user = usuarioService.login(loginRequestDto.getUsername(), loginRequestDto.getPassword());
         if (user!=null){
             UserDto dto = modelMapper.map(user, UserDto.class);

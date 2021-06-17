@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort.Order;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "api/rates")
@@ -56,8 +57,7 @@ public class RateController {
     }
 
     @GetMapping(value = "{id}", produces = "application/json")
-    public ResponseEntity<Rate> RateByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
-        Rate rate= rateService.getRateById(id);
-        return ResponseEntity.ok(rate);
+    public ResponseEntity<?> RateByCode(@PathVariable("id") Integer id){
+        return new ResponseEntity<>(rateService.getRateById(id), HttpStatus.OK);
     }
 }
