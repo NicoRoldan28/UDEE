@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +71,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping(value = "auth/login2")
+    @PostMapping(value = "auth/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         Usuario user = usuarioService.login(loginRequestDto.getUsername(), loginRequestDto.getPassword());
         if (user!=null){
@@ -81,7 +82,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping(value = "users2",consumes = "application/json")
+    @PostMapping(value = "newUser",consumes = "application/json")
     public ResponseEntity newClient(@RequestBody Usuario user){
         Usuario newUser = usuarioService.newUser(user);
         URI location = ServletUriComponentsBuilder
@@ -92,7 +93,8 @@ public class UsuarioController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/users2")
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @GetMapping("/users")
     public ResponseEntity<List<Usuario>> allUsers(Pageable pageable) {
         Page page = usuarioService.allUsers(pageable);
         return response(page);
@@ -108,6 +110,7 @@ public class UsuarioController {
                 .body(page.getContent());
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "/users2/{id}", produces = "application/json")
     public ResponseEntity<Usuario> userByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
         Usuario user = usuarioService.getUserById(id);

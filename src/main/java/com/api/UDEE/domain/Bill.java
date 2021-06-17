@@ -19,7 +19,7 @@ public class Bill {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user")
-    private User userClient;
+    private Usuario userClient;
 
     @OneToOne
     @JoinColumn(name = "id_address")

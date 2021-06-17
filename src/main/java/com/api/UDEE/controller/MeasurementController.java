@@ -63,8 +63,6 @@ public class MeasurementController {
         }else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Meter");
         }
-
-
     }
 
     @GetMapping("/measurements")

@@ -27,12 +27,7 @@ public class UdeeApplication {
 					.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
 					.authorizeRequests()
 					.antMatchers(HttpMethod.POST, "/auth/login").permitAll()
-					.antMatchers(HttpMethod.POST, "/auth/login2").permitAll()
-					.antMatchers(HttpMethod.POST, "/users2").permitAll()
-					.antMatchers(HttpMethod.GET, "/users2").permitAll()
-					.antMatchers(HttpMethod.POST, "/api/rates").permitAll()
-					.antMatchers(HttpMethod.POST, "/api/clients").permitAll()
-					.antMatchers(HttpMethod.POST, "/api/address").permitAll()
+					.antMatchers(HttpMethod.POST, "/newUser").permitAll()
 					.antMatchers(HttpMethod.POST, "/measurements").permitAll()
 					.anyRequest().authenticated();
 		}

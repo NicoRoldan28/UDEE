@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -29,7 +30,7 @@ public class BrandController {
         this.modelMapper=modelMapper;
     }
 
-
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = "application/json")
     public ResponseEntity newBrand(@RequestBody Brand brand){
         Brand newBrand = brandService.newBrand(brand);
@@ -41,7 +42,8 @@ public class BrandController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/brands")
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @GetMapping()
     public ResponseEntity<List<Brand>> allBrands(Pageable pageable) {
         Page page = brandService.allBrands(pageable);
         return response(page);
@@ -57,6 +59,7 @@ public class BrandController {
                 .body(page.getContent());
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "{id}", produces = "application/json")
     public ResponseEntity<Brand> brandByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
         Brand brand = brandService.getBrandById(id);

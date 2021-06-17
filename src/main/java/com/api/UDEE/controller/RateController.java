@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.data.domain.Sort;
@@ -34,13 +35,13 @@ public class RateController {
         //this.modelMapper=modelMapper;
     }
 
-
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping
     public PostResponse newRate(@RequestBody Rate rate) {
         return rateService.newRate(rate);
     }
 
-    @GetMapping("/rates")
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     public ResponseEntity<List<Rate>> allRates(Pageable pageable) {
         Page page = rateService.allRates(pageable);
         return response(page);
@@ -56,6 +57,7 @@ public class RateController {
                 .body(page.getContent());
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "{id}", produces = "application/json")
     public ResponseEntity<?> RateByCode(@PathVariable("id") Integer id){
         return new ResponseEntity<>(rateService.getRateById(id), HttpStatus.OK);

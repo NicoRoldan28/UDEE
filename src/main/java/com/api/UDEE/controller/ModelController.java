@@ -31,8 +31,7 @@ public class ModelController {
         //this.modelMapper=modelMapper;
     }
 
-    //@PreAuthorize(value = "hasAuthority(TypeUser.CLIENT)")
-    @PreAuthorize(value = "hasAuthority('CLIENT')")
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = "application/json")
     public ResponseEntity newModel(@RequestBody Model model){
         Model newModel = modelService.newModel(model);
@@ -44,7 +43,7 @@ public class ModelController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/models")
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     public ResponseEntity<List<Model>> allModels(Pageable pageable) {
         Page page = modelService.allModels(pageable);
         return response(page);
@@ -60,6 +59,7 @@ public class ModelController {
                 .body(page.getContent());
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "{id}", produces = "application/json")
     public ResponseEntity<Model> ModelByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
         Model model = modelService.getModelById(id);

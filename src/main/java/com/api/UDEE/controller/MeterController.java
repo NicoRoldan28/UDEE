@@ -38,7 +38,7 @@ public class MeterController {
         this.conversionService= conversionService;
     }
 
-    @PreAuthorize(value = "hasAuthority('CLIENT')")
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = "application/json")
     public ResponseEntity newCountry(@RequestBody Meter meter){
         Meter newMeasure = meterService.newMeter(meter);
@@ -63,6 +63,7 @@ public class MeterController {
         return ResponseEntity.ok(Meter.builder().build());
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/meters")
     public ResponseEntity<List<Meter>> allMeters(Pageable pageable) {
         Page page = meterService.allMeter(pageable);
@@ -79,6 +80,8 @@ public class MeterController {
                 .body(page.getContent());
     }
 
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "{id}", produces = "application/json")
     public ResponseEntity<Meter> measureByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
         Meter measure = meterService.getMeterById(id);
