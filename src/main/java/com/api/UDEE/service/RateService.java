@@ -27,16 +27,6 @@ public class RateService {
         return rateRepository.findById(id).orElseThrow(AddressNotExistsException::new);
     }
 
-    /*
-    public Rate newRate(Rate rate) {
-        if (!rateRepository.existsById(rate.getId())) {
-            return rateRepository.save(rate);
-        }
-        else{
-            return null;
-        }
-    }*/
-
     public PostResponse newRate(Rate rate) {
         Rate r = rateRepository.save(rate);
         return PostResponse

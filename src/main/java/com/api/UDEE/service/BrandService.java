@@ -22,12 +22,7 @@ public class BrandService {
     }
 
     public Brand newBrand(Brand brand) {
-        //if (!brandRepository.existsById(brand.getId())) {
             return brandRepository.save(brand);
-        /*}
-        else{
-            return null;
-        }*/
     }
 
     public Page allBrands(Pageable pageable) {

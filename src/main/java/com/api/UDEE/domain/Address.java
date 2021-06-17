@@ -22,11 +22,6 @@ public class Address {
     @JoinColumn(name = "rate_id")
     private Rate rate;
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference(value="client_id")
-    @JoinColumn(name="client_id")
-    private Client client;*/
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_user")
     private User userClient;

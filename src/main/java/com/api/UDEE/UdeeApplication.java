@@ -33,20 +33,8 @@ public class UdeeApplication {
 					.antMatchers(HttpMethod.POST, "/api/rates").permitAll()
 					.antMatchers(HttpMethod.POST, "/api/clients").permitAll()
 					.antMatchers(HttpMethod.POST, "/api/address").permitAll()
+					.antMatchers(HttpMethod.POST, "/measurements").permitAll()
 					.anyRequest().authenticated();
-
-			/*
-			http.csrf().disable()
-					.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-					.authorizeRequests()
-					.antMatchers(HttpMethod.POST, "/measurement").permitAll()
-					.antMatchers(HttpMethod.POST, "/login").permitAll()
-					.antMatchers(HttpMethod.POST, "/backoffice/login").permitAll()
-					.antMatchers("/console/**").permitAll() //TODO borrar esta linea
-					.antMatchers("/tariff/**").hasAuthority(User.TYPE.BLACKOFFICE.name())
-					.antMatchers("/clients/**").hasAuthority(User.TYPE.BLACKOFFICE.name())
-					.anyRequest().authenticated();
-			 */
 		}
 	}
 }

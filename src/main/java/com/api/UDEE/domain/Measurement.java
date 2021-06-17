@@ -1,11 +1,13 @@
 package com.api.UDEE.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Builder
 @Data
 @Entity
 @NoArgsConstructor
@@ -18,14 +20,15 @@ public class Measurement {
     @Column(name = "id_measurement")
     private Integer id;
 
-    @OneToOne
+    /*@OneToOne
     private Bill bill;
+*/
 
     @OneToOne
     @JoinColumn(name = "id_meter")
     private Meter meter;
 
-    private String measurement;
+    //private String measurement;
 
     private String date;
 

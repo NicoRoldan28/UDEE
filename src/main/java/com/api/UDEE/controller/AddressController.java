@@ -1,9 +1,7 @@
 package com.api.UDEE.controller;
 
 import com.api.UDEE.domain.Address;
-import com.api.UDEE.domain.User;
 import com.api.UDEE.exceptions.AddressNotExistsException;
-import com.api.UDEE.exceptions.CountryExistsException;
 import com.api.UDEE.service.AddressService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,7 @@ public class AddressController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity newCountry(@RequestBody Address address)  throws CountryExistsException {
+    public ResponseEntity newCountry(@RequestBody Address address){
         Address newAddress = addressService.newAddress(address);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

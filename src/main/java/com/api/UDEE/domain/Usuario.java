@@ -33,8 +33,6 @@ public class Usuario {
 
     private String email;
 
-    //@ManyToOne()
-    //@JoinColumn(name = "roles_id")
     @Column(name = "user_type")
     @AccessType(AccessType.Type.PROPERTY)
     TypeUser typeUser;

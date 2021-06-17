@@ -22,12 +22,7 @@ public class ModelService {
     }
 
     public Model newModel(Model model) {
-        //if (!modelRepository.existsById(model.getId())) {
             return modelRepository.save(model);
-        /*}
-        else{
-            return null;
-        }*/
     }
 
     public Page allModels(Pageable pageable) {

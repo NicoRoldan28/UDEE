@@ -23,7 +23,8 @@ public class Meter {
     @JoinColumn(name = "id_address")
     private Address address;
 
-    private String serial_number;
+    @Column(name = "serial_Number")
+    private String serialNumber;
 
     private String password;
 

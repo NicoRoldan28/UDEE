@@ -1,11 +1,7 @@
 package com.api.UDEE.controller;
 
-import com.api.UDEE.domain.Address;
 import com.api.UDEE.domain.Bill;
-import com.api.UDEE.domain.User;
 import com.api.UDEE.exceptions.AddressNotExistsException;
-import com.api.UDEE.exceptions.CountryExistsException;
-import com.api.UDEE.service.AddressService;
 import com.api.UDEE.service.BillService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +29,7 @@ public class BillController {
     }
 
     @PostMapping(value= "/api/bills",consumes = "application/json")
-    public ResponseEntity newCountry(@RequestBody Bill bill)  throws CountryExistsException {
+    public ResponseEntity newCountry(@RequestBody Bill bill)  {
         Bill newBill = billService.newBill(bill);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

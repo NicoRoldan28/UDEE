@@ -20,10 +20,6 @@ public class Brand {
     @GeneratedValue(strategy  = GenerationType.IDENTITY)
     @Column(name = "id_brand")
     private Integer id;
-    /*
-    * @Id
-    @GeneratedValue(strategy  = GenerationType.IDENTITY)
-    private Integer id;*/
 
     private String name;
 }

@@ -19,14 +19,6 @@ public class Client {
     @Column(name = "client_id")
     private Integer id;
 
-
-    /*
-    @OneToMany(mappedBy = "client")
-    private List<Address> addressList;
-    *@OneToMany(mappedBy = "id")
-    private List<Address> address;
-    * */
-
     private String name;
 
     private String last_name;
