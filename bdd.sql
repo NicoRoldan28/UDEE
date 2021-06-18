@@ -451,3 +451,9 @@ END //
 
 -----------------------------------------------------------------------
 
+DELIMITER //
+CREATE PROCEDURE bills_for_date(IN new_id_client, IN new_date_start, IN new_date_end)
+BEGIN 
+
+END //
+
