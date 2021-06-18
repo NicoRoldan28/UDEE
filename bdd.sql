@@ -452,8 +452,22 @@ END //
 -----------------------------------------------------------------------
 
 DELIMITER //
-CREATE PROCEDURE bills_for_date(IN new_id_client, IN new_date_start, IN new_date_end)
+CREATE PROCEDURE bills_for_date(IN new_id_client INT(11), IN new_date_start DATE, IN new_date_end DATE)
 BEGIN 
-
+       SELECT C.id_client,C.name,C.last_name,C.email,U.id_user,U.username,U.password,A.id_address,A.street,A.number,R.id_rate,R.price,M.id_meter,M.serial_number,M.password,ME.id_measurement,ME.measurement,ME.date,B.id_bill,B.id_measurement,B.measure_start,B.measure_end,B.consumption_total,B.date_time_start,B.date_time_End,B.total
+            FROM Clients C 
+        INNER JOIN Address A 
+                ON C.id_address = A.id_address 
+        INNER JOIN Rates R 
+                ON R.id_rate = A.id_rate 
+        INNER JOIN meters M
+                ON M.id_address = A.id_address
+        INNER JOIN Measurements ME
+                ON ME.id_meter = M.id_meter
+        INNER JOIN Bills B
+                ON B.id_address = A.id_address
+        INNER JOIN Users U
+                ON U.id_client = C.id_client
+            WHERE C.id_client = new_id_client AND B.date_time_start = new_date_start AND B.date_time_End = new_date_end;
 END //
 
