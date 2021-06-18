@@ -471,3 +471,23 @@ BEGIN
             WHERE C.id_client = new_id_client AND B.date_time_start = new_date_start AND B.date_time_End = new_date_end;
 END //
 
+DELIMITER //
+CREATE PROCEDURE bills_unpaid (IN new_id_client INT(11))
+BEGIN 
+        SELECT B.id_bill, B.id_address, B.id_measurement, B.id_rate, B.id_user, B.measure_start,B.measure_end,B.date_time_start,B.date_time_End,B.consumption_total,B.total,B.paid
+        FROM Bills B
+        INNER JOIN Clients C
+        ON B.id_address = C.id_address
+        WHERE C.id_client = new_id_client AND B.paid = 0;
+END //
+
+DELIMITER //
+CREATE PROCEDURE price_kwh (IN new_id_client INT(11), IN new_date_start DATE, IN new_date_end DATE)
+BEGIN 
+        SELECT id_client 
+        FROM Bills B
+        INNER JOIN Clients C
+        ON B.id_address = C.id_address
+        WHERE 
+
+END //
