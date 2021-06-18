@@ -30,7 +30,7 @@ public class AddressController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @PostMapping(consumes = "application/json")
+    @PostMapping(value = "/",consumes = "application/json")
     public ResponseEntity newAddress(@RequestBody Address address){
         Address newAddress = addressService.newAddress(address);
         URI location = ServletUriComponentsBuilder

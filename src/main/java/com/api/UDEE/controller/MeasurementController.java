@@ -2,9 +2,11 @@
 package com.api.UDEE.controller;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.api.UDEE.Utils.EntityURLBuilder;
+import com.api.UDEE.domain.Bill;
 import com.api.UDEE.domain.Measurement;
 import com.api.UDEE.domain.Meter;
 import com.api.UDEE.dto.MeasurementsDto;
@@ -15,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -85,5 +88,13 @@ public class MeasurementController {
     public ResponseEntity<Measurement> readingByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
         Measurement reading = measurementService.getMeasurementById(id);
         return ResponseEntity.ok(reading);
+    }
+
+    @GetMapping(value = "/dates", produces = "application/json")
+    public ResponseEntity<List<Measurement>> measurementsByDates(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+                                                  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date to ){
+        List<Measurement> listMeasurements = new ArrayList<Measurement>();
+        listMeasurements= measurementService.allMeasurementsByDates(from,to);
+        return (ResponseEntity<List<Measurement>>) listMeasurements;
     }
 }

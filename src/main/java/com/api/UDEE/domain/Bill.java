@@ -42,4 +42,6 @@ public class Bill {
     private Rate rate;
 
     private Integer total;
+
+    private Boolean paid;
 }

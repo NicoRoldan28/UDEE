@@ -1,5 +1,6 @@
 package com.api.UDEE.service;
 
+import com.api.UDEE.domain.Bill;
 import com.api.UDEE.domain.Measurement;
 import com.api.UDEE.exceptions.AddressNotExistsException;
 import com.api.UDEE.repository.MeasurementRepository;
@@ -7,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class MeasurementService {
@@ -33,4 +37,7 @@ public class MeasurementService {
         return measurementRepository.save(measurement);
     }
 
+    public List<Measurement> allMeasurementsByDates(Date from, Date to){
+        return measurementRepository.findAll();
+    }
 }

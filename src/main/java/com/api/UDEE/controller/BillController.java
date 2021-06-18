@@ -7,12 +7,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.security.core.Authentication;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -60,4 +64,20 @@ public class BillController {
         Bill bill = billService.getBillById(id);
         return ResponseEntity.ok(bill);
     }
+
+    @GetMapping(value = "/api/bills/dates", produces = "application/json")
+    public ResponseEntity<List<Bill>> billByDates(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date to ){
+        List<Bill> listBills = new ArrayList<Bill>();
+              listBills= billService.allBillsByDates(from,to);
+        return (ResponseEntity<List<Bill>>) listBills;
+    }
+
+    @GetMapping(value = "/api/bills/unpaid", produces = "application/json")
+    public ResponseEntity<List<Bill>> billUnpaid(Authentication authentication){
+        List<Bill> listBill = new ArrayList<Bill>();
+        listBill= billService.allBillUnpaid();
+        return (ResponseEntity<List<Bill>>) listBill;
+    }
+
 }
