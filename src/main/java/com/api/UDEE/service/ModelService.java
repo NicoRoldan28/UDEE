@@ -1,6 +1,5 @@
 package com.api.UDEE.service;
 
-import com.api.UDEE.domain.Client;
 import com.api.UDEE.domain.Model;
 import com.api.UDEE.exceptions.AddressNotExistsException;
 import com.api.UDEE.repository.ModelRepository;

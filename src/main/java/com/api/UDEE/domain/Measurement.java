@@ -28,6 +28,7 @@ public class Measurement {
     @JoinColumn(name = "id_meter")
     private Meter meter;
 
+    private Float value;
     //private String measurement;
 
     private String date;

@@ -1,7 +1,6 @@
 package com.api.UDEE.controller;
 
 import com.api.UDEE.AbstractController;
-import com.api.UDEE.service.ClientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -10,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static com.api.UDEE.utils.TestUtils.aRateJSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

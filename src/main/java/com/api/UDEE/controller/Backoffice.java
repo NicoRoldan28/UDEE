@@ -164,12 +164,12 @@ public class Backoffice {
         return ResponseEntity.created(location).build();
     }
 
-    @PostMapping()
+    @PostMapping(value = "/measurements")
     public ResponseEntity<Meter> addReading(@RequestBody MeasurementsDto incoming){
         System.out.println("INCOMING READING: " + incoming.toString());
         Meter existent = meterService.getMeterBySerialNumber(incoming.getSerialNumber());
         if(existent.getPassword().equals(incoming.getPassword())){
-            Measurement added = measurementService.add(conversionService.convert(incoming, Measurement.class));
+            Measurement added = measurementService.add(conversionService.convert(incoming,Measurement.class));
         }else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid credentials.");
         }
@@ -227,8 +227,5 @@ public class Backoffice {
         listBill= billService.allBillUnpaidByUserAndAddress(idClient,idAddress);
         return (ResponseEntity<List<Bill>>) listBill;
     }
-
-
-
 
 }

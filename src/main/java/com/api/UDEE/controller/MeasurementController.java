@@ -46,8 +46,8 @@ public class MeasurementController {
         this.modelMapper=modelMapper;
         this.conversionService= conversionService;
     }
-
-    @PostMapping("")
+    /*
+    @PostMapping()
     public ResponseEntity add(@RequestBody MeasurementsDto measurement) {
         System.out.println(measurement.toString());
         Meter meter= meterService.getMeterBySerialNumber(measurement.getSerialNumber());
@@ -67,8 +67,8 @@ public class MeasurementController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Meter");
         }
     }
-
-    @GetMapping("/measurements")
+*/
+    @GetMapping()
     public ResponseEntity<List<Measurement>> allMeasurements(Pageable pageable) {
         Page page = measurementService.allMeasurements(pageable);
         return response(page);

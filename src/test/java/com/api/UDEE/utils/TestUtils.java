@@ -1,6 +1,5 @@
 package com.api.UDEE.utils;
 
-import com.api.UDEE.domain.Client;
 import com.api.UDEE.domain.Model;
 import com.api.UDEE.domain.Rate;
 import com.api.UDEE.domain.Usuario;
