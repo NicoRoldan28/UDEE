@@ -1,281 +1,260 @@
-create database UDEE;
-use UDEE;
-drop database UDEE;
+-- MySQL Workbench Forward Engineering
 
-/*Facturas*/
-create table Bills (
-	id_bill int not null,
-	id_user int not null,
-	id_address int not null,
-    number_measurer int not null,
-    measure_start int not null,
-    measure_end int not null,
-    consumption_total int not null,
-	date_time_start datetime,/*son solo fechas*/
-	date_time_End datetime,/*son solo fechas*/
-    id_rate int not null,
-    total int not null,/*(Consumo * Tarifa)*/
-	CONSTRAINT `PK-Bill` PRIMARY KEY (id_bill),
-	CONSTRAINT `FK-IdUser` FOREIGN KEY (id_user) references Users(id_user),
-    CONSTRAINT `FK-IdAddress` FOREIGN KEY (id_address) references Address(id_address),
-    CONSTRAINT `FK-IdRate` FOREIGN KEY (id_rate) references Rates(id_rate));
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
-/*Usuarios*/
-CREATE TABLE Users(
-	id_user INT NOT NULL AUTO_INCREMENT,
-    id_client int not null,
-    username VARCHAR(30) NOT NULL,
-    password VARCHAR(30) NOT NULL,
-	CONSTRAINT `PK-User` PRIMARY KEY (id_user),
-    CONSTRAINT `FK-IdClient` FOREIGN KEY (id_client) references Clients(id_client));
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema UDEE
+-- -----------------------------------------------------
 
-/*Clientes*/
-CREATE TABLE Clients(
-	id_client INT NOT NULL auto_increment,
-    id_address int not null,
-    name varchar(30) not null,
-    last_name varchar(30) not null,
-    email varchar(40) not null,
-    constraint `PK-Client` PRIMARY KEY(id_client),
-    CONSTRAINT `FK-IdAddress` FOREIGN KEY (id_address) references Address(id_address));
+-- -----------------------------------------------------
+-- Schema UDEE
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `UDEE` DEFAULT CHARACTER SET utf8 ;
+USE `UDEE` ;
+
+-- -----------------------------------------------------
+-- Table `UDEE`.`Rates`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `UDEE`.`Rates` (
+  `id_rate` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `price` FLOAT NOT NULL,
+  `type` VARCHAR(30) NOT NULL,
+  PRIMARY KEY (`id_rate`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
-/*direcciones*/
-create table Address(
-	id_address int not null auto_increment,
-    id_rate int not null,
-    street varchar(30) not null,
-    number int not null,
-    constraint `PK-Address` primary key(id_address),
-    constraint `FK-Rate` foreign key(id_rate) references Rates(id_rate)
-);
-
-/*tarifas*/
-create table Rates(
-	id_rate int not null auto_increment,
-    price float not null,
-    constraint `PK-Rate` primary key(id_rate)
-);
-
-/*Medidores*/
-create table meters(
-	id_meter int not null auto_increment,
-    id_address int not null,
-	serial_number varchar(30) not null,
-    password varchar(30) not null,
-    id_brand int not null,
-    id_model int not null,
-    constraint `PK-Meter` primary key(id_meter),
-    constraint `FK-Brand` foreign key(id_brand) references Brands(id_brand),
-    constraint `FK-Address` foreign key(id_address) references Address(id_address),
-    constraint `FK-Model` foreign key(id_model) references Models(id_model)
-);
+-- -----------------------------------------------------
+-- Table `UDEE`.`Brands`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `UDEE`.`Brands` (
+  `id_brand` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(30) NOT NULL,
+  PRIMARY KEY (`id_brand`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
-/*Mediciones*/
-create table Measurements(
-	id_measurement int not null auto_increment,
-    id_bill int not null,
-    id_meter int not null,
-    measurement varchar(30) not null,
-    date date not null,
-    constraint `PK-Measurement` primary key(id_measurement),
-    constraint `FK-Bill` foreign key(id_bill) references udee.bills(id_bill),
-    constraint `FK-Meter` foreign key(id_meter) references udee.meters(id_meter)
-);
-drop table Measurements;
-/*Marcas*/
-create table Brands(
-	id_brand int not null auto_increment,
-    name varchar(30)not null,
-    constraint `PK-Brand` primary key(id_brand)
-);
+-- -----------------------------------------------------
+-- Table `UDEE`.`Models`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `UDEE`.`Models` (
+  `id_model` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(30) NOT NULL,
+  `Brands_id_brand` INT(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_model`),
+  INDEX `fk_Models_Brands1_idx` (`Brands_id_brand` ASC),
+  CONSTRAINT `fk_Models_Brands1`
+    FOREIGN KEY (`Brands_id_brand`)
+    REFERENCES `UDEE`.`Brands` (`id_brand`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
-/*Modelos*/
-create table Models(
-	id_model int not null auto_increment,
-    name varchar(30) not null,
-    constraint `PK-Model` primary key(id_model)
-);
+-- -----------------------------------------------------
+-- Table `UDEE`.`Meters`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `UDEE`.`Meters` (
+  `id_meter` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `serial_number` VARCHAR(30) NOT NULL,
+  `password` VARCHAR(30) NOT NULL,
+  `Models_id_model` INT(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_meter`),
+  INDEX `fk_meters_Models1_idx` (`Models_id_model` ASC),
+  CONSTRAINT `fk_meters_Models1`
+    FOREIGN KEY (`Models_id_model`)
+    REFERENCES `UDEE`.`Models` (`id_model`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
-select * from Brands;
-select * from Models;
-select * from Measures;
-select * from Rates;
-select * from Address;
+-- -----------------------------------------------------
+-- Table `UDEE`.`Users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `UDEE`.`Users` (
+  `id_user` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(30) NOT NULL,
+  `password` VARCHAR(30) NOT NULL,
+  `name` VARCHAR(30) NOT NULL,
+  `last_name` VARCHAR(30) NOT NULL,
+  `email` VARCHAR(40) NOT NULL,
+  `user_type` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`id_user`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
-
-/*
-uen dia
-
-Tenes las relaciones al revés en muchos csasos
-
-Por ej :
-
-Address tiene un id_measurement, no deberia ya que  Measurement 
-debería relacionarse con meter y meter con address.
-
-create table Address(
-	id_address int not null auto_increment,
-    //id_measure int not null,
-    id_rate int not null,
-    street varchar(30) not null,
-    number int not null,
-    constraint `PK-Address` primary key(id_address),
-    //constraint `FK-Measure` foreign key(id_measure) references Measures(id_measure),
-    constraint `FK-Rate` foreign key(id_rate) references Rates(id_rate)
-);
-
-create table meters(
-	id_meter int not null auto_increment,
-    id_address int not null,
-	serial_number varchar(30) not null,
-    password varchar(30) not null,
-    id_brand int not null,
-    id_model int not null,
-    constraint `PK-Meter` primary key(id_meter),
-    constraint `FK-Brand` foreign key(id_brand) references Brands(id_brand),
-    constraint `FK-Address` foreign key(id_address) references Address(id_address),
-    constraint `FK-Model` foreign key(id_model) references Models(id_model)
-);
-
-create table Measurements(
-	id_measurement int not null auto_increment,
-    id_bill int not null,
-    id_meter int not null,
-    measurement varchar(30) not null,
-    date date not null,
-    constraint `PK-Measurement` primary key(id_measurement),
-    constraint `FK-Bill` foreign key(id_bill) references Bills(id_bill),
-    constraint `FK-Meter` foreign key(id_meter) references Meters(id_meter)
-);
+-- -----------------------------------------------------
+-- Table `UDEE`.`Address`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `UDEE`.`Address` (
+  `id_address` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `street` VARCHAR(30) NOT NULL,
+  `number` INT(11) NOT NULL,
+  `Rates_id_rate` INT(11) UNSIGNED NOT NULL,
+  `Meters_id_meter` INT(11) UNSIGNED NOT NULL,
+  `Users_id_user` INT(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_address`),
+  INDEX `fk_Address_Rates1_idx` (`Rates_id_rate` ASC),
+  INDEX `fk_Address_Meters1_idx` (`Meters_id_meter` ASC),
+  INDEX `fk_Address_Users1_idx` (`Users_id_user` ASC),
+  CONSTRAINT `fk_Address_Rates1`
+    FOREIGN KEY (`Rates_id_rate`)
+    REFERENCES `UDEE`.`Rates` (`id_rate`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Address_Meters1`
+    FOREIGN KEY (`Meters_id_meter`)
+    REFERENCES `UDEE`.`Meters` (`id_meter`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Address_Users1`
+    FOREIGN KEY (`Users_id_user`)
+    REFERENCES `UDEE`.`Users` (`id_user`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
-
-En bills también, un measurement debería tener un Bill.
-
-Es decir 1 BILL -> n MEASUREMENTS, en ese caso la relación siempre 
-se especifica por la propagación de la clave en el N .
-
-create table Bills (
-	id_bill int not null,
-	id_user int not null,
-	id_address int not null,
-    id_bill int not null,
-    number_measurer int not null,
-    measure_start int not null,
-    measure_end int not null,
-    consumption_total int not null,
-	date_time_start datetime,/*son solo fechas
-	date_time_End datetime,/*son solo fechas
-    id_rate int not null,
-    total int not null,/*(Consumo * Tarifa)
-	CONSTRAINT `PK-Bill` PRIMARY KEY (id_bill),
-	CONSTRAINT `FK-IdUser` FOREIGN KEY (id_user) references Users(id_user),
-    CONSTRAINT `FK-IdAddress` FOREIGN KEY (id_address) references Address(id_address),
-    CONSTRAINT `FK-IdRate` FOREIGN KEY (id_rate) references Rates(id_rate));
+-- -----------------------------------------------------
+-- Table `UDEE`.`Bills`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `UDEE`.`Bills` (
+  `id_bill` INT(11) UNSIGNED NOT NULL,
+  `date` DATE NOT NULL,
+  `total` FLOAT NOT NULL,
+  `paid` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`id_bill`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
-Por lo demás , esta bien , revisaría esas cosas, tabla de measurements 
-/ address / clients / bills y sus relaciones
+-- -----------------------------------------------------
+-- Table `UDEE`.`Measurements`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `UDEE`.`Measurements` (
+  `id_measurement` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `value` FLOAT NOT NULL,
+  `measurement_start` FLOAT NOT NULL,
+  `masurement_end` FLOAT NOT NULL,
+  `date_start` DATETIME NOT NULL,
+  `date_end` DATETIME NOT NULL,
+  `invoiced` TINYINT(1) NOT NULL,
+  `Address_id_address` INT(11) UNSIGNED NOT NULL,
+  `Bills_id_bill` INT(11) UNSIGNED NULL,
+  PRIMARY KEY (`id_measurement`),
+  INDEX `fk_Measurements_Address1_idx` (`Address_id_address` ASC),
+  INDEX `fk_Measurements_Bills1_idx` (`Bills_id_bill` ASC),
+  CONSTRAINT `fk_Measurements_Address1`
+    FOREIGN KEY (`Address_id_address`)
+    REFERENCES `UDEE`.`Address` (`id_address`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Measurements_Bills1`
+    FOREIGN KEY (`Bills_id_bill`)
+    REFERENCES `UDEE`.`Bills` (`id_bill`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
-*/
 
-/*
-● Cliente
-● Domicilio
-● Numero de medidor
-● Medición inicial
-● Medición final
-● Consumo total en Kwh
-● Fecha y hora medición inicial
-● Fecha y hora medición final
-● Tipo de tarifa
-● Total a pagar */
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -------------------------------------------------------------------------------------
 
 
+DELIMITER //
+CREATE PROCEDURE up_users(new_username VARCHAR (30), new_password VARCHAR (30), new_name VARCHAR (30), new_last_name VARCHAR (30), new_email VARCHAR (30), new_type VARCHAR (20))
+BEGIN
+	INSERT INTO Users(id_user,username,password,name,last_name,email,user_type)
+        VALUES(new_username,new_password,new_name,new_last_name,new_email,new_type);
+END //
 
 DELIMITER //
-CREATE PROCEDURE up_clients(new_id_address INT(11),new_name VARCHAR(30), new_last_name VARCHAR(30),new_email VARCHAR(40))
+CREATE PROCEDURE up_rates(new_price FLOAT,new_type VARCHAR (30))
 BEGIN
-	INSERT INTO Clients(id_address,name,last_name,email)
-        VALUES(new_id_address,new_name,new_last_name,new_email);
+	INSERT INTO Rates(price,type)
+        VALUES(new_price,new_type);
 END //
+
 DELIMITER //
-CREATE PROCEDURE up_users(new_id_client INT(11), new_username VARCHAR(30), new_password VARCHAR(30))
+CREATE PROCEDURE up_address(new_street VARCHAR (30), new_number INT (11), new_id_rates INT (11), new_id_meter INT (11), new_id_users INT (11))
 BEGIN
-	INSERT INTO Users(id_client, username, password)
-        VALUES (new_id_client,new_username,new_password);
+	INSERT INTO Address(street,number,Rates_id_rate,Meters_id_meter,Users_id_user)
+        VALUES(new_street,new_number,new_id_rates,new_id_meter),new_id_users;
 END //
-DELIMITER //
-CREATE PROCEDURE up_rates(new_price FLOAT)
-BEGIN
-	INSERT INTO Rates(price)
-        VALUES(new_price);
-END //
-DELIMITER //
-CREATE PROCEDURE up_address(new_id_rate INT(11),new_street VARCHAR(30), new_number INT(11))
-BEGIN
-	INSERT INTO Address(id_rate,street,number)
-        VALUES(new_id_rate,new_street,new_number);
-END //
+
 DELIMITER //
 CREATE PROCEDURE up_brands(new_name VARCHAR(30))
 BEGIN
 	INSERT INTO Brands(name)
         VALUES(new_name);
 END //
+
 DELIMITER //
 CREATE PROCEDURE up_models(new_name VARCHAR(30))
 BEGIN
 	INSERT INTO Models(name)
         VALUES(new_name);
 END//
+
 DELIMITER //
-CREATE PROCEDURE up_meters(new_id_address INT(11), new_serial_numbers VARCHAR(30), new_password VARCHAR(30), new_id_brand INT(11), new_id_model INT(11))
+CREATE PROCEDURE up_meters(new_serial_numbers VARCHAR (30), new_password VARCHAR (30), new_id_model INT (11))
 BEGIN
-	INSERT INTO meters(id_address,serial_number,password,id_brand,id_model)
-        VALUES(new_id_address,new_serial_numbers,new_password,new_id_brand,new_id_model);
+	INSERT INTO meters(serial_number,password,Models_id_model)
+        VALUES(new_serial_numbers,new_password,new_id_model);
 END //
+
 DELIMITER //
-CREATE PROCEDURE up_measurements(new_id_bill INT(11),new_id_meter INT(11),new_measurement VARCHAR(30), new_date DATE)
+CREATE PROCEDURE up_measurements(new_value FLOAT, new_measurement_start FLOAT, new_measurement_end FLOAT, new_date_start DATETIME, new_date_end DATETIME, new_invoiced TINYINT (1), new_id_address INT (11), new_id_bill INT (11)
 BEGIN
-	INSERT INTO Measurements(id_bill,id_meter,measurement,date)
-        VALUES(new_id_bill,new_id_meter,new_measurement,new_date);
+	INSERT INTO Measurements(value,measurement_start,masurement_end,date_start,date_end,invoiced,Address_id_address,Bills_id_bill)
+        VALUES(new_value,new_measurement_start,new_measurement_end,new_date_start,new_date_end,new_invoiced,new_id_address,new_id_bill);
 END //
+
 DELIMITER //
-CREATE PROCEDURE up_bills(new_id_bill INT(11), new_id_user INT(11), new_id_address INT(11), new_id_measurement INT(11), new_measure_start INT(11), new_measure_end INT(11), new_date_time_start datetime, new_date_time_end datetime, new_id_rate INT(11))
+CREATE PROCEDURE up_bills(new_date DATE, new_paid TINYINT (1))
 BEGIN
-	DECLARE new_total DOUBLE;
-        DECLARE new_consumption_total DOUBLE;
-        SET new_consumption_total = (SELECT measurement FROM Measurements WHERE new_id_measurement = id_measurement);
-        SET new_total = new_consumption_total * (SELECT  price 
-		FROM Rates
-		WHERE id_rate = new_id_rate);
-        INSERT INTO Bills(id_bill,id_user,id_address,id_measurement,measure_start,measure_end,consumption_total,date_time_start,date_time_End,id_rate,total)
-	VALUES(new_id_bill,new_id_user,new_id_address,new_id_measurement,new_measure_start,new_measure_end,new_consumption_total,new_date_time_start,new_date_time_end,new_id_rate,new_total);
+        DECLARE new_total FLOAT;
+        SET new_total = (SELECT price FROM Rates R
+                                INNER JOIN Measurements M 
+                                ON M.Address_id_address = A.id_address
+                                INNER JOIN Address A 
+                                ON A.Rates_id_rate = R.id_rate
+                                INNER JOIN Bills B
+                                WHERE M.Bills_id_bill = B.id_bill )
+
+        INSERT INTO Bills(date,new_total,paid)
+        VALUES (new_date,new_total,new_paid)
 END //
+
 -----------------------------------------------------------------------
-DELIMITER //
-CREATE PROCEDURE down_clients(new_id_client INT(11))
-BEGIN 
-        DELETE FROM Clients WHERE id_address = new_id_client;
-END //
+
 DELIMITER //
 CREATE PROCEDURE down_users(new_id_user INT(11))
 BEGIN 
         DELETE FROM Users WHERE id_user = new_id_user;
 END //
+
 DELIMITER //
 CREATE PROCEDURE down_rates(new_id_rate INT(11))
 BEGIN 
         DELETE FROM Rates WHERE id_rate = new_id_rate;
 END //
+
 DELIMITER //
 CREATE PROCEDURE down_address(new_id_address INT(11))
 BEGIN 
@@ -286,21 +265,24 @@ CREATE PROCEDURE down_brands(new_id_brand INT(11))
 BEGIN 
         DELETE FROM Brands WHERE id_brand = new_id_brand;
 END //
+
 DELIMITER //
 CREATE PROCEDURE down_models(new_id_model INT(11))
 BEGIN 
         DELETE FROM Models WHERE id_model = new_id_model;
 END //
+
 DELIMITER //
 CREATE PROCEDURE down_meters(new_id_meter INT(11))
 BEGIN 
-        DELETE FROM meters WHERE id_meter = new_id_meter;
+        DELETE FROM Meters WHERE id_meter = new_id_meter;
 END //
 DELIMITER //
 CREATE PROCEDURE down_measurements(new_id_measurement INT(11))
 BEGIN 
         DELETE FROM Measurements WHERE id_measurement = new_id_measurement;
 END //
+
 DELIMITER //
 CREATE PROCEDURE down_bills(new_id_bill INT(11))
 BEGIN 
@@ -310,30 +292,29 @@ END //
 -----------------------------------------------------------------------
 
 DELIMITER //
-CREATE PROCEDURE update_clients(new_id_client INT(11),new_id_address INT(11),new_name VARCHAR(30),new_last_name VARCHAR(30),new_email VARCHAR(40))
-BEGIN 
-        UPDATE Clients SET id_address = new_id_address,name = new_name,last_name = new_last_name,email = new_email WHERE id_client = new_id_client;
-END //
-DELIMITER //
 CREATE PROCEDURE update_users(new_id_user INT(11),new_id_client INT(11),new_username VARCHAR(30),new_password VARCHAR(30))
 BEGIN 
         UPDATE Users SET id_client = new_id_client,username = new_username,password = new_password WHERE id_user = new_id_user;
 END //
+
 DELIMITER //
 CREATE PROCEDURE update_rates(new_id_rate INT(11),new_price FLOAT)
 BEGIN 
         UPDATE Rates SET price = new_price WHERE id_rate = new_id_rate;
 END //
+
 DELIMITER //
 CREATE PROCEDURE update_address(new_id_address INT(11),new_id_rate INT(11),new_street VARCHAR(30),new_number INT(11))
 BEGIN 
         UPDATE Address SET id_rate = new_id_rate,street = new_street,number = new_number WHERE id_address = new_id_address;
 END //
+
 DELIMITER //
 CREATE PROCEDURE update_brands(new_id_brand INT(11),new_name VARCHAR(30))
 BEGIN 
         UPDATE Brands SET name = new_name WHERE id_brand = new_id_brand;
 END //
+
 DELIMITER //
 CREATE PROCEDURE update_models(new_id_model INT(11),new_name VARCHAR(30))
 BEGIN   
@@ -344,11 +325,13 @@ CREATE PROCEDURE update_meters(new_id_meter INT(11),new_id_address INT(11),new_s
 BEGIN 
         UPDATE meters SET id_address = new_id_address,serial_number = new_serial_number,password = new_password,id_brand = new_id_brand,id_model = new_id_model WHERE id_meter = new_id_meter;
 END //
+
 DELIMITER //
 CREATE PROCEDURE update_measurements(new_id_measurement INT(11),new_id_bill INT(11),new_id_meter INT(11), new_measurement VARCHAR(30),new_date DATE)
 BEGIN 
         UPDATE Measurements SET id_bill = new_id_bill,id_meter = new_id_meter,measurement = new_measurement,date = new_date WHERE id_measurement = new_id_measurement;
 END //
+
 DELIMITER //
 CREATE PROCEDURE update_bills(new_id_bill INT(11), new_id_user INT(11), new_id_address INT(11), new_id_measurement INT(11), new_measure_start INT(11), new_measure_end INT(11), new_date_time_start datetime, new_date_time_end datetime, new_id_rate INT(11))
 BEGIN 
@@ -408,41 +391,43 @@ CREATE PROCEDURE select_all_address()
 BEGIN 
         SELECT id_address,id_rate,street,number FROM Address;
 END //
+
 DELIMITER //
 CREATE PROCEDURE select_all_bills()
 BEGIN 
         SELECT id_bill,id_address,id_measurement,measure_start,measure_end,consumption_total,date_time_start,date_time_End,id_rate,total FROM Bills;
 END //
+
 DELIMITER //
 CREATE PROCEDURE select_all_brands()
 BEGIN 
         SELECT id_brand,name FROM Brands;
 END //
-DELIMITER //
-CREATE PROCEDURE select_all_clients()
-BEGIN 
-        SELECT id_client,id_address,name,last_name,email FROM Clients;
-END //
+
 DELIMITER //
 CREATE PROCEDURE select_all_measurements()
 BEGIN 
         SELECT id_measurement,id_bill,id_meter,measurement,date FROM Measurements;
 END //
+
 DELIMITER //
 CREATE PROCEDURE select_all_meters()
 BEGIN 
         SELECT id_meter,id_address,serial_number,password,id_brand,id_model FROM meters;
 END //
+
 DELIMITER //
 CREATE PROCEDURE select_all_models()
 BEGIN 
         SELECT id_model,name FROM Models;
 END //
+
 DELIMITER //
 CREATE PROCEDURE select_all_rates()
 BEGIN 
         SELECT id_rate,price FROM Rates;
 END //
+
 DELIMITER //
 CREATE PROCEDURE select_all_users()
 BEGIN 
