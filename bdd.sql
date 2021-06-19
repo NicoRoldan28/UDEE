@@ -219,27 +219,30 @@ BEGIN
 END //
 
 DELIMITER //
-CREATE PROCEDURE up_measurements(new_value FLOAT, new_measurement_start FLOAT, new_measurement_end FLOAT, new_date_start DATETIME, new_date_end DATETIME, new_invoiced TINYINT (1), new_id_address INT (11), new_id_bill INT (11)
+CREATE PROCEDURE up_measurements(new_value FLOAT, new_measurement_start FLOAT, new_measurement_end FLOAT, new_date_start DATETIME, new_date_end DATETIME, new_invoiced TINYINT (1), new_id_address INT (11), new_id_bill INT (11))
 BEGIN
 	INSERT INTO Measurements(value,measurement_start,masurement_end,date_start,date_end,invoiced,Address_id_address,Bills_id_bill)
         VALUES(new_value,new_measurement_start,new_measurement_end,new_date_start,new_date_end,new_invoiced,new_id_address,new_id_bill);
 END //
 
-DELIMITER //
+/*DELIMITER //
 CREATE PROCEDURE up_bills(new_date DATE, new_paid TINYINT (1))
 BEGIN
         DECLARE new_total FLOAT;
-        SET new_total = (SELECT price FROM Rates R
+        if B.id_bill is NOT NULL 
+        BEGIN 
+                SET new_total = (SELECT price FROM Rates R
                                 INNER JOIN Measurements M 
                                 ON M.Address_id_address = A.id_address
                                 INNER JOIN Address A 
                                 ON A.Rates_id_rate = R.id_rate
                                 INNER JOIN Bills B
-                                WHERE M.Bills_id_bill = B.id_bill )
+                                WHERE M.Bills_id_bill = B.id_bill );
+        END IF;
 
         INSERT INTO Bills(date,new_total,paid)
         VALUES (new_date,new_total,new_paid)
-END //
+END //*/
 
 -----------------------------------------------------------------------
 
@@ -292,9 +295,9 @@ END //
 -----------------------------------------------------------------------
 
 DELIMITER //
-CREATE PROCEDURE update_users(new_id_user INT(11),new_id_client INT(11),new_username VARCHAR(30),new_password VARCHAR(30))
+CREATE PROCEDURE update_users(new_id_user INT (11), new_username VARCHAR (30), new_password VARCHAR (30), new_name VARCHAR (30), new_last_name VARCHAR (30), new_email VARCHAR (30), new_type VARCHAR (20))
 BEGIN 
-        UPDATE Users SET id_client = new_id_client,username = new_username,password = new_password WHERE id_user = new_id_user;
+        UPDATE Users SET username = new_username,password = new_password,name = new_name,last_name = new_last_name, email = new_email,user_type = new_type WHERE id_user = new_id_user;
 END //
 
 DELIMITER //
@@ -304,9 +307,9 @@ BEGIN
 END //
 
 DELIMITER //
-CREATE PROCEDURE update_address(new_id_address INT(11),new_id_rate INT(11),new_street VARCHAR(30),new_number INT(11))
+CREATE PROCEDURE update_address(new_id_address INT(11),new_street VARCHAR(30),new_number INT(11),new_id_rate INT (11), new_id_meter INT (11), new_id_user INT (11))
 BEGIN 
-        UPDATE Address SET id_rate = new_id_rate,street = new_street,number = new_number WHERE id_address = new_id_address;
+        UPDATE Address SET street = new_street,number = new_number, Rates_id_rate = new_id_rate, Meters_id_meter = new_id_meter, Users_id_user = new_id_user WHERE id_address = new_id_address;
 END //
 
 DELIMITER //
@@ -321,18 +324,18 @@ BEGIN
         UPDATE Models SET name = new_name WHERE id_model = new_id_model;
 END //
 DELIMITER //
-CREATE PROCEDURE update_meters(new_id_meter INT(11),new_id_address INT(11),new_serial_number VARCHAR(30),new_password VARCHAR(30),new_id_brand INT(11),new_id_model INT(11))
+CREATE PROCEDURE update_meters(new_id_meter INT(11),new_serial_number VARCHAR(30),new_password VARCHAR(30),new_id_model INT(11))
 BEGIN 
-        UPDATE meters SET id_address = new_id_address,serial_number = new_serial_number,password = new_password,id_brand = new_id_brand,id_model = new_id_model WHERE id_meter = new_id_meter;
+        UPDATE Meters SET serial_number = new_serial_number,password = new_password,id_model = new_id_model WHERE id_meter = new_id_meter;
 END //
 
 DELIMITER //
-CREATE PROCEDURE update_measurements(new_id_measurement INT(11),new_id_bill INT(11),new_id_meter INT(11), new_measurement VARCHAR(30),new_date DATE)
+CREATE PROCEDURE update_measurements(new_id_measurement INT (11), new_value FLOAT, new_measurement_start FLOAT, new_measurement_end FLOAT, new_date_start DATETIME, new_date_end DATETIME, new_invoiced TINYINT (1), new_id_address INT (11), new_id_bill INT (11))
 BEGIN 
-        UPDATE Measurements SET id_bill = new_id_bill,id_meter = new_id_meter,measurement = new_measurement,date = new_date WHERE id_measurement = new_id_measurement;
+        UPDATE Measurements SET value = new_value, measurement_start = new_measurement_start, masurement_end = new_measurement_end, date_start = new_date_start, date_end = new_date_end, invoiced = new_invoiced, Address_id_address = new_id_address, Bills_id_bill = new_id_bill WHERE id_measurement = new_id_measurement;
 END //
 
-DELIMITER //
+/*DELIMITER //
 CREATE PROCEDURE update_bills(new_id_bill INT(11), new_id_user INT(11), new_id_address INT(11), new_id_measurement INT(11), new_measure_start INT(11), new_measure_end INT(11), new_date_time_start datetime, new_date_time_end datetime, new_id_rate INT(11))
 BEGIN 
         DECLARE new_total DOUBLE;
@@ -344,28 +347,30 @@ BEGIN
         UPDATE Bills 
         SET id_user=new_id_user,id_address=new_id_address,id_measurement=new_id_measurement,measure_start=new_measure_start,measure_end=new_measure_end,consumption_total=new_consumption_total,date_time_start=new_date_time_start,date_time_End=new_date_time_end,id_rate=new_id_rate,total=new_total 
         WHERE id_bill = new_id_bill;
-END //
+END //*/
 
 -----------------------------------------------------------------------
 
 DELIMITER //
-CREATE PROCEDURE select_clients(new_id_client INT(11))
+CREATE PROCEDURE select_users(new_id_users INT(11))
 BEGIN 
-        SELECT C.id_client,C.name,C.last_name,C.email,U.id_user,U.username,U.password,A.id_address,A.street,A.number,R.id_rate,R.price,M.id_meter,M.serial_number,M.password,ME.id_measurement,ME.measurement,ME.date,B.id_bill,B.id_measurement,B.measure_start,B.measure_end,B.consumption_total,B.date_time_start,B.date_time_End,B.total
-            FROM Clients C 
+        SELECT U.id_user,U.username,U.password,U.name,U.last_name,U.email,U.user_type,A.id_address,A.street,A.number,R.id_rate,R.price,R.type,M.id_meter,M.serial_number,M.password,MO.id_model,MO.name,BR.id_brand,BR.name,ME.id_measurement,ME.value,ME.measurement_start,ME.masurement_end,ME.date_start,ME.date_end,ME.invoiced,B.id_bill,B.date,B.total,B.paid
+            FROM Users U 
         INNER JOIN Address A 
-                ON C.id_address = A.id_address 
+                ON U.id_user = A.Users_id_user 
         INNER JOIN Rates R 
-                ON R.id_rate = A.id_rate 
-        INNER JOIN meters M
-                ON M.id_address = A.id_address
+                ON R.id_rate = A.Rates_id_rate 
+        INNER JOIN Meters M
+                ON M.id_meter = A.Meters_id_meter
+        INNER JOIN Models MO
+                ON MO.id_model = M.Models_id_model
+        INNER JOIN Brands BR
+                ON  BR.id_brand = MO.Brands_id_brand
         INNER JOIN Measurements ME
-                ON ME.id_meter = M.id_meter
+                ON ME.Address_id_address = A.id_address
         INNER JOIN Bills B
-                ON B.id_address = A.id_address
-        INNER JOIN Users U
-                ON U.id_client = C.id_client
-            WHERE C.id_client = new_id_client; 
+                ON B.id_bill = ME.Bills_id_bill
+            WHERE id_user = new_id_users; 
 END //
 
 DELIMITER //
