@@ -33,4 +33,14 @@ public class Measurement {
 
     private String date;
 
+    @ManyToOne
+    @JoinColumn(name = "id_bill")
+    private Bill bills;
+    /*
+    @ManyToOne
+    @JoinColumn(name = "bill_id", referencedColumnName = "bill_id")
+    private Bill bill;
+    *
+    * */
+
 }

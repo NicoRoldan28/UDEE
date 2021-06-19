@@ -31,12 +31,7 @@ public class BillService {
     }
 
     public Bill newBill(Bill bill) {
-        if (!billRepository.existsById(bill.getId())) {
             return billRepository.save(bill);
-        }
-        else{
-            return null;
-        }
     }
 
     public Page allBills(Pageable pageable) {

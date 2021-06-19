@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -38,10 +39,20 @@ public class Bill {
     private String date_time_end;
 
     @OneToOne
-    @JoinColumn(name = "rate_id")
+    @JoinColumn(name = "id_rate")
     private Rate rate;
 
     private Integer total;
 
     private Boolean paid;
+
+    @OneToMany(mappedBy = "bills", cascade = CascadeType.ALL)
+    @Column(name = "id_measurement")
+    private List<Measurement> measurementList;
+    /*
+    @OneToMany(mappedBy = "bill")
+    private List<Measurement> measurementList
+    *
+    * */
+
 }

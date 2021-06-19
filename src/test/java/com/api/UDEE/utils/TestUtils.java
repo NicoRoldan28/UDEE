@@ -63,7 +63,7 @@ public class TestUtils {
         u.setPassword("1234");
         return u;
     }
-
+/*
     public static Client aClient() {
         Client c = new Client();
         c.setEmail("nicolasroldan31@gmail.com");

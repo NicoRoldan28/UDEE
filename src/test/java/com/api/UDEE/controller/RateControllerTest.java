@@ -14,7 +14,7 @@ import static com.api.UDEE.utils.TestUtils.aRateJSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = RateController.class)
+//@SpringBootTest(classes = RateController.class)
 public class RateControllerTest extends AbstractController{
     @MockBean
     private RateService rateService;

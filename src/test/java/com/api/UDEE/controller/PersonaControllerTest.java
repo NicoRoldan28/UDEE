@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+/*
 @SpringBootTest(classes = ClientController.class)
 public class PersonaControllerTest extends AbstractController {
 
@@ -48,8 +48,7 @@ public class PersonaControllerTest extends AbstractController {
                 .andExpect(status().isOk());
 
         assertEquals(HttpStatus.OK.value(), resultActions.andReturn().getResponse().getStatus());
-    }
-*/
+    }/
     @Test
     public void addPersonBadRequest() throws Exception {
         final ResultActions resultActions = givenController().perform(MockMvcRequestBuilders
@@ -61,3 +60,4 @@ public class PersonaControllerTest extends AbstractController {
     }
 
 }
+        */
