@@ -441,7 +441,7 @@ END //
 
 -----------------------------------------------------------------------
 
-DELIMITER //
+/*DELIMITER //
 CREATE PROCEDURE bills_for_date(IN new_id_client INT(11), IN new_date_start DATE, IN new_date_end DATE)
 BEGIN 
        SELECT C.id_client,C.name,C.last_name,C.email,U.id_user,U.username,U.password,A.id_address,A.street,A.number,R.id_rate,R.price,M.id_meter,M.serial_number,M.password,ME.id_measurement,ME.measurement,ME.date,B.id_bill,B.id_measurement,B.measure_start,B.measure_end,B.consumption_total,B.date_time_start,B.date_time_End,B.total
@@ -480,4 +480,4 @@ BEGIN
         ON B.id_address = C.id_address
         WHERE 
 
-END //
+END //*/
