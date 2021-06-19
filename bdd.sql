@@ -394,13 +394,13 @@ END //
 DELIMITER //
 CREATE PROCEDURE select_all_address()
 BEGIN 
-        SELECT id_address,id_rate,street,number FROM Address;
+        SELECT id_address,street,number,Rates_id_rate,Meters_id_meter,Users_id_user FROM Address;
 END //
 
 DELIMITER //
 CREATE PROCEDURE select_all_bills()
 BEGIN 
-        SELECT id_bill,id_address,id_measurement,measure_start,measure_end,consumption_total,date_time_start,date_time_End,id_rate,total FROM Bills;
+        SELECT id_bill,date,total,paid FROM Bills;
 END //
 
 DELIMITER //
@@ -412,31 +412,31 @@ END //
 DELIMITER //
 CREATE PROCEDURE select_all_measurements()
 BEGIN 
-        SELECT id_measurement,id_bill,id_meter,measurement,date FROM Measurements;
+        SELECT id_measurement,value,measurement_start,masurement_end,date_start,date_end,invoiced,Address_id_address, Bills_id_bill FROM Measurements;
 END //
 
 DELIMITER //
 CREATE PROCEDURE select_all_meters()
 BEGIN 
-        SELECT id_meter,id_address,serial_number,password,id_brand,id_model FROM meters;
+        SELECT id_meter,serial_number,password,Models_id_model FROM Meters;
 END //
 
 DELIMITER //
 CREATE PROCEDURE select_all_models()
 BEGIN 
-        SELECT id_model,name FROM Models;
+        SELECT id_model,name,Brands_id_brand FROM Models;
 END //
 
 DELIMITER //
 CREATE PROCEDURE select_all_rates()
 BEGIN 
-        SELECT id_rate,price FROM Rates;
+        SELECT id_rate,price,type FROM Rates;
 END //
 
 DELIMITER //
 CREATE PROCEDURE select_all_users()
 BEGIN 
-        SELECT id_user,id_client,username,password FROM Users;
+        SELECT id_user,username,password,name,last_name,email,user_type FROM Users;
 END //
 
 -----------------------------------------------------------------------
