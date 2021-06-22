@@ -31,6 +31,11 @@ public class TestUtils {
         return r;
     }
 
+    public static Page<Rate> aRatePage(){
+        return new PageImpl<>(List.of(aRate()));
+    }
+
+/*
     public static String aModelJSON() {
         final Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
@@ -39,30 +44,31 @@ public class TestUtils {
 
         return gson.toJson(aModel());
     }
-
+/*
     public static Model aModel(){
         Model m= new Model();
         m.setId(1);
         m.setName("a10");
         return m;
     }
-
+*/
     public static Pageable aPageable(){
         return PageRequest.of(0,10);
     }
 
+    /*
     public static Page<Usuario> aUsuarioPage(){
         return new PageImpl<>(List.of(aUsuario()));
     }
     //aClientPage
-
-    public static Usuario aUsuario(){
+*/
+   /* public static Usuario aUsuario(){
         Usuario u = new Usuario();
         u.setId(1);
         u.setUsername("nico");
         u.setPassword("1234");
         return u;
-    }
+    }*/
 /*
     public static Client aClient() {
         Client c = new Client();

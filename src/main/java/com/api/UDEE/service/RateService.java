@@ -32,13 +32,10 @@ public class RateService {
         return rateRepository.findById(id).orElseThrow(AddressNotExistsException::new);
     }
 
-    public PostResponse newRate(Rate rate) {
+    public Rate newRate(Rate rate) {
         Rate r = rateRepository.save(rate);
-        return PostResponse
-                .builder()
-                .status(HttpStatus.CREATED)
-                .url(EntityURLBuilder.buildURL(RATE_PATH, r.getId()))
-                .build();
+
+        return rate;
     }
 
     public Page allRates(Pageable pageable){

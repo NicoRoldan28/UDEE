@@ -31,6 +31,7 @@ public class BillService {
     }
 
     public Bill newBill(Bill bill) {
+        System.out.println(bill);
             return billRepository.save(bill);
     }
 
@@ -38,11 +39,11 @@ public class BillService {
         return billRepository.findAll(pageable);
     }
 
-    public List<Bill> allBillsByDates(Date from, Date to){
+    public List<Bill> allBillsByDates(Date from, Date to, Integer id){
         return billRepository.findAll();
     }
 
-    public List<Bill> allBillUnpaid(){
+    public List<Bill> allBillUnpaid(Integer id){
         return billRepository.findAll();
     }
 
@@ -53,5 +54,4 @@ public class BillService {
         address = addressService.getAddressById(idAddress);
         return billRepository.findAll();
     }
-
 }

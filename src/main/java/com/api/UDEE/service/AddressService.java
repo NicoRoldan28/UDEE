@@ -42,6 +42,10 @@ public class AddressService {
         return addressRepository.findAll(pageable);
     }
 
+    /*public List<Address> getAddressByIdUser(Integer id){
+        return addressRepository.findByUserId(id);
+    }*/
+
     public ResponseEntity<?> deleteById(Integer id) {
         try {
             addressRepository.deleteById(id);

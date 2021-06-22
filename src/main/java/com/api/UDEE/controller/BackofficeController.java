@@ -1,10 +1,7 @@
 package com.api.UDEE.controller;
 
 import com.api.UDEE.domain.*;
-import com.api.UDEE.dto.AddressDto;
-import com.api.UDEE.dto.MeasurementsDto;
-import com.api.UDEE.dto.MeterDto;
-import com.api.UDEE.dto.RatesDto;
+import com.api.UDEE.dto.*;
 import com.api.UDEE.exceptions.AddressNotExistsException;
 import com.api.UDEE.service.*;
 import org.modelmapper.ModelMapper;
@@ -25,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class Backoffice {
+public class BackofficeController {
 
     RateService rateService;
     AddressService addressService;
@@ -34,9 +31,12 @@ public class Backoffice {
     ModelMapper modelMapper;
     ConversionService conversionService;
     BillService billService;
+    UsuarioService usuarioService;
+
+    private static final String CLIENT = "CLIENT";
 
     @Autowired
-    public Backoffice(RateService rateService,AddressService addressService,MeterService meterService,MeasurementService measurementService,ModelMapper modelMapper,ConversionService conversionService,BillService billService ){
+    public BackofficeController(RateService rateService, AddressService addressService, MeterService meterService, MeasurementService measurementService, ModelMapper modelMapper, ConversionService conversionService, BillService billService, UsuarioService usuarioService ){
         this.rateService=rateService;
         this.addressService=addressService;
         this.meterService=meterService;
@@ -44,12 +44,19 @@ public class Backoffice {
         this.modelMapper=modelMapper;
         this.conversionService=conversionService;
         this.billService=billService;
+        this.usuarioService=usuarioService;
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping(value = "/api/rates", produces = "application/json")
-    public PostResponse newRate(@RequestBody Rate rate) {
-        return rateService.newRate(rate);
+    public ResponseEntity<Rate> newRate(@RequestBody Rate rate) {
+        Rate newRate= rateService.newRate(rate);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(newRate.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
@@ -125,10 +132,28 @@ public class Backoffice {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @GetMapping(value = "/api/address/{id}", produces = "application/json")
+    @GetMapping("/api/address/{id}")
     public ResponseEntity<Address> addressById(@PathVariable("id") Integer id) throws AddressNotExistsException {
         Address address = addressService.getAddressById(id);
         return ResponseEntity.ok(address);
+    }
+
+    @PreAuthorize(value = "hasAuthority('CLIENT')")
+    @GetMapping(value = "/api/address2", produces = "application/json")
+    public ResponseEntity<List<Address>> allAddress2(Pageable pageable) {
+        Page page = addressService.allAddress(pageable);
+        return responseAddress(page);
+    }
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE') or hasAuthority('CLIENT') ")
+    @GetMapping( "/api/address/user/{id}")
+    public ResponseEntity<Address> addressByIdUser(@PathVariable("id") Integer id, Authentication authentication) throws AddressNotExistsException {
+        Address address2= new Address();
+        if (validateRol(authentication)){
+            address2 = addressService.getAddressById(id);
+        }
+
+        return ResponseEntity.ok(address2);
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
@@ -149,7 +174,25 @@ public class Backoffice {
         return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
     }
 
+    public boolean validate(Integer id,Authentication authentication) throws AddressNotExistsException {
+        boolean validate= false;
 
+        Address address = this.addressService.getAddressById(id);
+        Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
+        if (address.getUserClient().getId()==user.getId()){
+            validate=true;
+        }
+        return validate;
+    }
+
+    public boolean validateRol(Authentication authentication) throws AddressNotExistsException {
+        boolean isUser= false;
+        Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
+        if(user.getTypeUser().getName().equals(CLIENT)){
+            isUser= true;
+        }
+        return isUser;
+    }
     /*-------------------------------------------------------------------------------------------------------------*/
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")

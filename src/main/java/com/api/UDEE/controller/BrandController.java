@@ -22,12 +22,10 @@ import java.util.List;
 public class BrandController {
 
     private final BrandService brandService;
-    private ModelMapper modelMapper;
 
     @Autowired
-    public BrandController(BrandService brandService,ModelMapper modelMapper){
+    public BrandController(BrandService brandService){
         this.brandService=brandService;
-        this.modelMapper=modelMapper;
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
