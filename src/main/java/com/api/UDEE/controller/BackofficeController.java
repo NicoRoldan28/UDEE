@@ -2,7 +2,7 @@ package com.api.UDEE.controller;
 
 import com.api.UDEE.domain.*;
 import com.api.UDEE.dto.*;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.service.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,9 @@
 package com.api.UDEE.service;
 
-import com.api.UDEE.domain.Address;
 import com.api.UDEE.domain.Meter;
-import com.api.UDEE.dto.AddressDto;
 import com.api.UDEE.dto.MeterDto;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.MeterNotExistsException;
 import com.api.UDEE.repository.MeterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -26,8 +25,8 @@ public class MeterService {
         this.meterRepository=meterRepository;
     }
 
-    public Meter getMeterById(Integer id) throws AddressNotExistsException {
-        return meterRepository.findById(id).orElseThrow(AddressNotExistsException::new);
+    public Meter getMeterById(Integer id) throws MeterNotExistsException {
+        return meterRepository.findById(id).orElseThrow(()-> new MeterNotExistsException("No Meter was found by that id"));
     }
 
     public Meter getMeterBySerialNumber(String serialNumber){

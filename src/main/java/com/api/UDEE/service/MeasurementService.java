@@ -1,8 +1,7 @@
 package com.api.UDEE.service;
 
-import com.api.UDEE.domain.Bill;
 import com.api.UDEE.domain.Measurement;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.repository.MeasurementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +21,7 @@ public class MeasurementService {
     }
 
     public Measurement getMeasurementById(Integer id) throws AddressNotExistsException {
-        return measurementRepository.findById(id).orElseThrow(AddressNotExistsException::new);
+        return measurementRepository.findById(id).orElseThrow(()-> new AddressNotExistsException("No Measurement was found by that id"));
     }
 
     public Measurement newMeasurement(Measurement reading) {

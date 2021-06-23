@@ -1,16 +1,17 @@
 package com.api.UDEE.exceptions;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor
-@Data
 @NoArgsConstructor
 @Builder
-public class ErrorMessage {
-    String code;
-    String message;
+@Data
+public class ErrorMessage extends Exception{
+    String route;
+    String method;
+    HttpStatus httpStatus;
 }

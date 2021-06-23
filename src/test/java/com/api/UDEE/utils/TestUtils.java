@@ -1,5 +1,6 @@
 package com.api.UDEE.utils;
 
+import com.api.UDEE.domain.Brand;
 import com.api.UDEE.domain.Model;
 import com.api.UDEE.domain.Rate;
 import com.api.UDEE.domain.Usuario;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 public class TestUtils {
@@ -22,6 +24,22 @@ public class TestUtils {
                 .setPrettyPrinting().create();
 
         return gson.toJson(aRate());
+    }
+
+    public static String aBrandJSON(){
+        final Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .setPrettyPrinting().create();
+
+        return gson.toJson(aBrand());
+    }
+
+    public static Brand aBrand(){
+        Brand b= new Brand();
+        b.setId(1);
+        b.setName("nokia");
+        return  b;
     }
 
     public static Rate aRate(){
@@ -89,4 +107,5 @@ public class TestUtils {
         return p;
     }
      */
+
 }

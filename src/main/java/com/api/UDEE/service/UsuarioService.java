@@ -1,7 +1,7 @@
 package com.api.UDEE.service;
 
 import com.api.UDEE.domain.Usuario;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.UsuarioNotExistsException;
 import com.api.UDEE.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,8 +24,8 @@ public class UsuarioService {
         return Optional.ofNullable(usuarioRepository.findByUsernameAndPassword(username, password)).orElseThrow(() -> new RuntimeException("User does not exists"));
     }
 
-    public Usuario getUserById(Integer id) throws AddressNotExistsException {
-        return usuarioRepository.findById(id).orElseThrow(AddressNotExistsException::new);
+    public Usuario getUserById(Integer id) throws UsuarioNotExistsException {
+        return usuarioRepository.findById(id).orElseThrow(()-> new UsuarioNotExistsException("No person was found by that id"));
     }
 
     public Usuario newUser(Usuario user) {

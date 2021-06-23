@@ -1,7 +1,7 @@
 package com.api.UDEE.service;
 
 import com.api.UDEE.domain.User;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public User getUserById(Integer id) throws AddressNotExistsException {
-        return userRepository.findById(id).orElseThrow(AddressNotExistsException::new);
+        return userRepository.findById(id).orElseThrow(()-> new AddressNotExistsException("No se encontro una bill con ese id"));
     }
 
     public User newUser(User user) {

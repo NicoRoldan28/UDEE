@@ -1,7 +1,8 @@
 package com.api.UDEE.service;
 
 import com.api.UDEE.domain.Model;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.ModelNotExistsException;
 import com.api.UDEE.repository.ModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,8 +17,8 @@ public class ModelService {
         this.modelRepository=modelRepository;
     }
 
-    public Model getModelById(Integer id) throws AddressNotExistsException {
-        return modelRepository.findById(id).orElseThrow(AddressNotExistsException::new);
+    public Model getModelById(Integer id) throws ModelNotExistsException {
+        return modelRepository.findById(id).orElseThrow(()-> new ModelNotExistsException("No Model was found by that id"));
     }
 
     public Model newModel(Model model) {

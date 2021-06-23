@@ -1,11 +1,8 @@
 package com.api.UDEE.controller;
 
-import com.api.UDEE.domain.Address;
 import com.api.UDEE.domain.Model;
-import com.api.UDEE.domain.User;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.service.ModelService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

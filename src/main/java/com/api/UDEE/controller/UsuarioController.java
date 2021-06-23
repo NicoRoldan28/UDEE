@@ -1,12 +1,11 @@
 package com.api.UDEE.controller;
 
 import com.api.UDEE.domain.TypeUser;
-import com.api.UDEE.domain.User;
 import com.api.UDEE.domain.Usuario;
 import com.api.UDEE.dto.LoginRequestDto;
 import com.api.UDEE.dto.LoginResponseDto;
 import com.api.UDEE.dto.UserDto;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.service.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;

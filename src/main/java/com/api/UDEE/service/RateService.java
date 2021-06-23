@@ -1,11 +1,9 @@
 package com.api.UDEE.service;
 
-import com.api.UDEE.Utils.EntityURLBuilder;
-import com.api.UDEE.domain.Meter;
-import com.api.UDEE.domain.PostResponse;
 import com.api.UDEE.domain.Rate;
 import com.api.UDEE.dto.RatesDto;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.RateNotExistsException;
 import com.api.UDEE.repository.RateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -14,10 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RateService {
@@ -28,8 +22,8 @@ public class RateService {
         this.rateRepository=rateRepository;
     }
 
-    public Rate getRateById(Integer id) throws AddressNotExistsException {
-        return rateRepository.findById(id).orElseThrow(AddressNotExistsException::new);
+    public Rate getRateById(Integer id) throws RateNotExistsException {
+        return rateRepository.findById(id).orElseThrow(()-> new RateNotExistsException("No Rate was found by that id"));
     }
 
     public Rate newRate(Rate rate) {

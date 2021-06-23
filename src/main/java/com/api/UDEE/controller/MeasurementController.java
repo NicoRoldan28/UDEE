@@ -3,15 +3,13 @@ package com.api.UDEE.controller;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.api.UDEE.domain.Bill;
 import com.api.UDEE.domain.Measurement;
 import com.api.UDEE.domain.Usuario;
 import com.api.UDEE.dto.UserDto;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.service.MeasurementService;
 import com.api.UDEE.service.MeterService;
 import com.api.UDEE.service.UsuarioService;
-import com.fasterxml.jackson.databind.ser.std.UUIDSerializer;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

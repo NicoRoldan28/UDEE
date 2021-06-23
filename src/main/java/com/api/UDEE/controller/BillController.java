@@ -1,10 +1,10 @@
 package com.api.UDEE.controller;
 
-import com.api.UDEE.domain.Address;
 import com.api.UDEE.domain.Bill;
 import com.api.UDEE.domain.Usuario;
 import com.api.UDEE.dto.UserDto;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.BillNotExistsException;
 import com.api.UDEE.service.BillService;
 import com.api.UDEE.service.UsuarioService;
 import org.modelmapper.ModelMapper;
@@ -71,7 +71,7 @@ public class BillController {
     }
 
     @GetMapping(value = "/api/bills/{id}", produces = "application/json")
-    public ResponseEntity<Bill> billByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
+    public ResponseEntity<Bill> billByCode(@PathVariable("id") Integer id) throws BillNotExistsException {
         Bill bill = billService.getBillById(id);
         return ResponseEntity.ok(bill);
     }

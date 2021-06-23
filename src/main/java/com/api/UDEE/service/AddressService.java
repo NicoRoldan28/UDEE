@@ -1,10 +1,8 @@
 package com.api.UDEE.service;
 
 import com.api.UDEE.domain.Address;
-import com.api.UDEE.domain.Rate;
 import com.api.UDEE.dto.AddressDto;
-import com.api.UDEE.dto.RatesDto;
-import com.api.UDEE.exceptions.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -26,7 +24,7 @@ public class AddressService {
     }
 
     public Address getAddressById(Integer id) throws AddressNotExistsException {
-        return addressRepository.findById(id).orElseThrow(AddressNotExistsException::new);
+        return addressRepository.findById(id).orElseThrow(()-> new AddressNotExistsException("No Address was found by that id"));
     }
 
     public Address newAddress(Address address) {

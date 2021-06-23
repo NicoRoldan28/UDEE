@@ -1,27 +1,10 @@
 package com.api.UDEE.service;
 
-import com.api.UDEE.domain.Usuario;
-import com.api.UDEE.exceptions.AddressNotExistsException;
 import com.api.UDEE.repository.UsuarioRepository;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 //import static com.api.UDEE.utils.TestUtils.*;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class UsuarioServiceTest {
 
