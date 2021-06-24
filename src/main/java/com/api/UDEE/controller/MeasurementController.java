@@ -34,7 +34,7 @@ public class MeasurementController {
     private ConversionService conversionService;
     private UsuarioService usuarioService;
 
-    private static final String CLIENT = "CLIENT";
+    private static final String EMPLOYEE = "EMPLOYEE";
 
     @Autowired
     public MeasurementController(MeasurementService measurementService, MeterService meterService, ModelMapper modelMapper, ConversionService conversionService, UsuarioService usuarioService){
@@ -46,9 +46,14 @@ public class MeasurementController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Measurement>> allMeasurements(Pageable pageable) {
-        Page page = measurementService.allMeasurements(pageable);
-        return response(page);
+    public ResponseEntity<List<Measurement>> allMeasurements(Pageable pageable,Authentication authentication) {
+        if(validateRol(authentication)){
+            Page page = measurementService.allMeasurements(pageable);
+            return response(page);
+        }
+        else {
+            return (ResponseEntity<List<Measurement>>) ResponseEntity.status(HttpStatus.FORBIDDEN);
+        }
     }
 
     private ResponseEntity response(Page page) {
@@ -68,7 +73,6 @@ public class MeasurementController {
     }
 
     /*5) Consulta de mediciones por rango de fechas*/
-    @PreAuthorize(value = "hasAuthority('CLIENT')")
     @GetMapping(value = "/dates", produces = "application/json")
     public ResponseEntity<List<Measurement>> measurementsByDates(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
                                                                  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date to, Authentication authentication) throws AddressNotExistsException {
@@ -83,11 +87,11 @@ public class MeasurementController {
     }
 
     public boolean validateRol(Authentication authentication) throws AddressNotExistsException {
-        boolean isUser= false;
+        boolean isEmployee= false;
         Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
-        if(user.getTypeUser().getName().equals(CLIENT)){
-            isUser= true;
+        if(user.getTypeUser().getName().equals(EMPLOYEE)){
+            isEmployee= true;
         }
-        return isUser;
+        return isEmployee;
     }
 }

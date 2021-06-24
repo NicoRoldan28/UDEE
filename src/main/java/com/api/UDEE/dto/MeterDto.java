@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 public class MeterDto {
 
-    Address address;
+    AddressDto address;
     String serialNumber;
-    String password;
 }

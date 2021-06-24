@@ -6,6 +6,7 @@ import com.api.UDEE.dto.LoginRequestDto;
 import com.api.UDEE.dto.LoginResponseDto;
 import com.api.UDEE.dto.UserDto;
 import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.UsuarioNotExistsException;
 import com.api.UDEE.service.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
@@ -17,7 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,8 @@ public class UsuarioController {
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
 
+    private static final String CLIENT = "CLIENT";
+
     @Autowired
     public UsuarioController(UsuarioService usuarioService,ModelMapper modelMapper, ObjectMapper objectMapper){
         this.usuarioService=usuarioService;
@@ -48,7 +51,7 @@ public class UsuarioController {
     private String generateToken(UserDto userDto, TypeUser typeUser) {
         try {
             String authRole;
-            if(typeUser.equals("CLIENT")) {
+            if(typeUser.getName().equals("CLIENT")) {
                 authRole="CLIENT";
             }
             else {
@@ -89,14 +92,28 @@ public class UsuarioController {
                 .path("/{id}")
                 .buildAndExpand(newUser.getId())
                 .toUri();
-        return ResponseEntity.created(location).build();
+        return new ResponseEntity<>(location,(HttpStatus.CREATED));
     }
+    /*
+    commentService.updateComment(id,commentDto);
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("")
+                    .buildAndExpand(id)
+                    .toUri();
+            return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
+    *
+    * */
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/users")
-    public ResponseEntity<List<Usuario>> allUsers(Pageable pageable) {
-        Page page = usuarioService.allUsers(pageable);
-        return response(page);
+    public ResponseEntity<List<Usuario>> allUsers(Pageable pageable,Authentication authentication) {
+        if(!validateRol(authentication)){
+            Page page = usuarioService.allUsers(pageable);
+            return response(page);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     private ResponseEntity response(Page page) {
@@ -109,10 +126,25 @@ public class UsuarioController {
                 .body(page.getContent());
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @GetMapping(value = "/users2/{id}", produces = "application/json")
-    public ResponseEntity<Usuario> userByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
-        Usuario user = usuarioService.getUserById(id);
-        return ResponseEntity.ok(user);
+    @GetMapping(value = "/users/{id}", produces = "application/json")
+    public ResponseEntity<Usuario> userByCode(@PathVariable("id") Integer id, Authentication authentication) throws UsuarioNotExistsException {
+        if(!validateRol(authentication)){
+            Usuario user = usuarioService.getUserById(id);
+            return ResponseEntity.ok(user);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+
+    public boolean validateRol(Authentication authentication) throws AddressNotExistsException {
+        boolean isUser= false;
+        Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
+        if(user.getTypeUser().getName().equals(CLIENT)){
+            isUser= true;
+        }
+        return isUser;
     }
 }

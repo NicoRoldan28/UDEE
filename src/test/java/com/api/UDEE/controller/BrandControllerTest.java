@@ -2,23 +2,29 @@ package com.api.UDEE.controller;
 
 import com.api.UDEE.AbstractController;
 import com.api.UDEE.domain.Brand;
+import com.api.UDEE.domain.TypeUser;
+import com.api.UDEE.domain.Usuario;
+import com.api.UDEE.dto.UserDto;
 import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.service.BrandService;
+import com.api.UDEE.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Collections;
 import java.util.List;
 
-import static com.api.UDEE.utils.TestUtils.aBrand;
+import static com.api.UDEE.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,7 +32,10 @@ import static org.mockito.Mockito.when;
 public class BrandControllerTest extends AbstractController {
 
      BrandService brandService;
+     UsuarioService usuarioService;
      BrandController brandController;
+     Authentication auth;
+     Usuario user= aUsuarioEmp();
 
     private static List<Brand> EMPTY_LIST = Collections.emptyList();
     private static List<Brand> BRAND_LIST =  List.of(Brand.builder().id(1).name("nokia").build());
@@ -34,9 +43,11 @@ public class BrandControllerTest extends AbstractController {
     @BeforeEach
     public void setUp() {
         brandService= mock(BrandService.class);
-        brandController = new BrandController(brandService);
+        brandController = new BrandController(brandService,usuarioService);
+        auth= mock(Authentication.class);
     }
 
+    
     @Test
     public void newBrandOk()
     {
@@ -49,7 +60,43 @@ public class BrandControllerTest extends AbstractController {
 
         assertEquals(HttpStatus.CREATED.value(),responseEntity.getStatusCodeValue());
     }
+/*
+    private void validateRol_IsEmployee() {
 
+        when(auth.getPrincipal()).thenReturn(Usuario.builder().typeUser(TypeUser.EMPLOYEE).build());
+
+        //when(Usuario.builder().typeUser(TypeUser.EMPLOYEE))
+        assertEquals(user.getTypeUser().getName(),"EMPLOYEE");
+        /*
+        Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
+        if(user.getTypeUser().getName().equals(EMPLOYEE)){
+
+    }
+
+    private void validateRol_IsClient() {
+
+        when(auth.getPrincipal()).thenReturn(Usuario.builder().typeUser(TypeUser.EMPLOYEE).build());
+        //when(Usuario.builder().typeUser(TypeUser.EMPLOYEE))
+        assertEquals(user.getTypeUser().getName(),"CLIENT");
+    }
+
+*/
+/*
+
+        Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
+        if(user.getTypeUser().getName().equals(EMPLOYEE)){
+            isEmployee= true;
+        }
+        return isEmployee;
+    }
+
+    Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
+    if(user.getTypeUser().getName().equals(EMPLOYEE)){
+            isEmployee= true;
+        }
+
+
+*/
     @Test
     public void testAllBrandsHttpStatus200() {
 

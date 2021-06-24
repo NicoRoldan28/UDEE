@@ -1,8 +1,10 @@
 package com.api.UDEE.service;
 
 import com.api.UDEE.domain.Address;
+import com.api.UDEE.domain.Usuario;
 import com.api.UDEE.dto.AddressDto;
 import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.UsuarioNotExistsException;
 import com.api.UDEE.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -18,9 +20,11 @@ import java.util.List;
 @Service
 public class AddressService {
     private final AddressRepository addressRepository;
+    private final UsuarioService usuarioService;
     @Autowired
-    public AddressService(AddressRepository addressRepository){
+    public AddressService(AddressRepository addressRepository,UsuarioService usuarioService){
         this.addressRepository=addressRepository;
+        this.usuarioService=usuarioService;
     }
 
     public Address getAddressById(Integer id) throws AddressNotExistsException {
@@ -28,12 +32,7 @@ public class AddressService {
     }
 
     public Address newAddress(Address address) {
-        if (!addressRepository.existsById(address.getId())) {
             return addressRepository.save(address);
-        }
-        else{
-            return null;
-        }
     }
 
     public Page allAddress(Pageable pageable) {
@@ -71,4 +70,22 @@ public class AddressService {
         addressRepository.save((address));
     }
 
+    public Object addUserToAddress(Integer id, Integer userId) throws UsuarioNotExistsException {
+        Usuario user= this.usuarioService.getUserById(userId);
+        Address address= getAddressById(id);
+
+        if((user != null)&&(address!=null)){
+
+            address.setUserClient(user);
+
+            addressRepository.save(address);
+            return user;
+        }
+        else if (user == null){
+            return new UsuarioNotExistsException("No user was found by that id");
+        }
+        else {
+            return new AddressNotExistsException("No address was found by that id");
+        }
+    }
 }

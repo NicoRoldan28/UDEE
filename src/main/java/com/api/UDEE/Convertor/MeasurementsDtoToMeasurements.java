@@ -1,7 +1,6 @@
 package com.api.UDEE.Convertor;
 
 import com.api.UDEE.domain.Measurement;
-import com.api.UDEE.domain.Meter;
 import com.api.UDEE.dto.MeasurementsDto;
 import com.api.UDEE.service.MeterService;
 import org.modelmapper.ModelMapper;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MeasurementsDtoToMeasurements implements Converter<MeasurementsDto, Measurement>{
-
-    private ModelMapper modelMapper;
 
     @Autowired
     private MeterService meterService;

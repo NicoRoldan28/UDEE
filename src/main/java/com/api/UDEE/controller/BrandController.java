@@ -1,8 +1,9 @@
 package com.api.UDEE.controller;
 
 import com.api.UDEE.domain.Brand;
-import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.BrandNotExistsException;
 import com.api.UDEE.service.BrandService;
+import com.api.UDEE.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,29 +21,32 @@ import java.util.List;
 public class BrandController {
 
     private final BrandService brandService;
+    private UsuarioService usuarioService;
+
 
     @Autowired
-    public BrandController(BrandService brandService){
+    public BrandController(BrandService brandService,UsuarioService usuarioService){
         this.brandService=brandService;
+        this.usuarioService=usuarioService;
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @PreAuthorize(value = "hasRole('EMPLOYEE')")
     @PostMapping(consumes = "application/json")
     public ResponseEntity newBrand(@RequestBody Brand brand){
-        Brand newBrand = brandService.newBrand(brand);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(newBrand.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+            Brand newBrand = brandService.newBrand(brand);
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(newBrand.getId())
+                    .toUri();
+            return new ResponseEntity<>(location,(HttpStatus.CREATED));
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping()
     public ResponseEntity<List<Brand>> allBrands(Pageable pageable) {
-        Page page = brandService.allBrands(pageable);
-        return response(page);
+            Page page = brandService.allBrands(pageable);
+            return response(page);
     }
 
     private ResponseEntity response(Page page) {
@@ -57,8 +61,8 @@ public class BrandController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "{id}", produces = "application/json")
-    public ResponseEntity<Brand> brandByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
-        Brand brand = brandService.getBrandById(id);
-        return ResponseEntity.ok(brand);
+    public ResponseEntity<Brand> brandByCode(@PathVariable("id") Integer id) throws BrandNotExistsException {
+            Brand brand = brandService.getBrandById(id);
+            return ResponseEntity.ok(brand);
     }
 }

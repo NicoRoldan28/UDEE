@@ -137,6 +137,12 @@
 				<version>0.8.5</version>
 				<configuration>
 					<excludes>
+							<exclude>**/config/**</exclude>
+							<exclude>**/Convertor/**</exclude>
+							<exclude>**/dto/**</exclude>
+							<exclude>**/filter/**</exclude>
+							<exclude>**/exception/**</exclude>
+							<exclude>**/Utils/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>

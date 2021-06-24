@@ -24,7 +24,7 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_user")
-    private User userClient;
+    private Usuario userClient;
 
     @Column(name = "street")
     private String street;

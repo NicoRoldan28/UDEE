@@ -35,4 +35,6 @@ public class UsuarioService {
     public Page allUsers(Pageable pageable) {
         return usuarioRepository.findAll(pageable);
     }
+
+
 }

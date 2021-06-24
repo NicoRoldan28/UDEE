@@ -17,6 +17,7 @@ class UsuarioServiceTest {
 
         usuarioRepository=mock(UsuarioRepository.class);
         usuarioService = new UsuarioService(usuarioRepository);
+
     }
     /*
     @Test

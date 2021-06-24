@@ -16,4 +16,6 @@ public class RespsEntityExceptionHandler extends ResponseEntityExceptionHandler 
     public ResponseEntity<Object> handleNotFound(RuntimeException ex){
         return new ResponseEntity<>(new MessageDto(ex.getLocalizedMessage()), HttpStatus.NOT_FOUND);
     }
+    
+    
 }

@@ -28,7 +28,6 @@ public class RateService {
 
     public Rate newRate(Rate rate) {
         Rate r = rateRepository.save(rate);
-
         return rate;
     }
 
@@ -37,12 +36,13 @@ public class RateService {
     }
 
     public ResponseEntity<?> deleteById(Integer id) {
-        try {
-            rateRepository.deleteById(id);
-            return new ResponseEntity<>("Se ha eliminado la tarifa con éxito.", HttpStatus.OK);
-        } catch (DataAccessException e) {
-            return new ResponseEntity<>("La tarifa con el id " + id + " es inexistente.", HttpStatus.NOT_FOUND);
-        }
+            if (getRateById(id)!= null){
+                rateRepository.deleteById(id);
+                return new ResponseEntity<>("Se ha eliminado la tarifa con éxito.", HttpStatus.OK);
+            }
+            else {
+                throw new RateNotExistsException("No Rate was found by that id");
+            }
     }
 
     public void updateRates(Integer id, RatesDto ratesDto) throws AddressNotExistsException {

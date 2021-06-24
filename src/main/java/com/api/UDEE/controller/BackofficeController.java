@@ -3,6 +3,8 @@ package com.api.UDEE.controller;
 import com.api.UDEE.domain.*;
 import com.api.UDEE.dto.*;
 import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
+import com.api.UDEE.exceptions.notFound.MeterNotExistsException;
+import com.api.UDEE.exceptions.notFound.RateNotExistsException;
 import com.api.UDEE.service.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,23 +49,29 @@ public class BackofficeController {
         this.usuarioService=usuarioService;
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping(value = "/api/rates", produces = "application/json")
-    public ResponseEntity<Rate> newRate(@RequestBody Rate rate) {
-        Rate newRate= rateService.newRate(rate);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(newRate.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+    public ResponseEntity newRate(@RequestBody Rate rate, Authentication authentication) {
+        if (!validateRol(authentication)) {
+            Rate newRate= rateService.newRate(rate);
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(newRate.getId())
+                    .toUri();
+            return new ResponseEntity<>(location,(HttpStatus.CREATED));
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "/api/rates", produces = "application/json")
-    public ResponseEntity<List<Rate>> allRates(Pageable pageable) {
-        Page page = rateService.allRates(pageable);
-        return responseRate(page);
+    public ResponseEntity<List<Rate>> allRates(Pageable pageable, Authentication authentication) {
+        if (!validateRol(authentication)) {
+            Page page = rateService.allRates(pageable);
+            return responseRate(page);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     private ResponseEntity responseRate(Page page) {
@@ -76,49 +84,68 @@ public class BackofficeController {
                 .body(page.getContent());
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "/api/rates/{id}", produces = "application/json")
-    public ResponseEntity<?> RateByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
-        return new ResponseEntity<>(rateService.getRateById(id), HttpStatus.OK);
+    public ResponseEntity<?> RateByCode(@PathVariable("id") Integer id, Authentication authentication) throws RateNotExistsException {
+        if (!validateRol(authentication)) {
+            return new ResponseEntity<>(rateService.getRateById(id), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/api/rates/{id}")
-    public ResponseEntity<?> deleteRate(@PathVariable(name = "id") Integer id) {
-        return rateService.deleteById(id);
+    public ResponseEntity<?> deleteRate(@PathVariable(name = "id") Integer id, Authentication authentication) {
+        if(!validateRol(authentication)){
+            return rateService.deleteById(id);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/api/rates/{id}")
-    public ResponseEntity<?> updateRates(@PathVariable("id") Integer id,@RequestBody RatesDto ratesDto) throws AddressNotExistsException {
-        rateService.updateRates(id,ratesDto);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("")
-                .buildAndExpand(id)
-                .toUri();
-        return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
+    public ResponseEntity<?> updateRates(@PathVariable("id") Integer id,@RequestBody RatesDto ratesDto, Authentication authentication) throws RateNotExistsException {
+        if(!validateRol(authentication)){
+            rateService.updateRates(id,ratesDto);
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("")
+                    .buildAndExpand(id)
+                    .toUri();
+            return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping(value = "/api/address", produces = "application/json")
-    public ResponseEntity newAddress(@RequestBody Address address){
+    public ResponseEntity newAddress(@RequestBody Address address, Authentication authentication){
+        if(!validateRol(authentication)){
         Address newAddresss = addressService.newAddress(address);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(newAddresss.getId())
                 .toUri();
-        return ResponseEntity.created(location).build();
+            return new ResponseEntity<>(location,(HttpStatus.CREATED));
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "/api/address", produces = "application/json")
-    public ResponseEntity<List<Address>> allAddress(Pageable pageable) {
-        Page page = addressService.allAddress(pageable);
-        return responseAddress(page);
+    public ResponseEntity<List<Address>> allAddress(Pageable pageable, Authentication authentication) {
+        if(!validateRol(authentication)){
+            Page page = addressService.allAddress(pageable);
+            return responseAddress(page);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     private ResponseEntity responseAddress(Page page) {
@@ -131,20 +158,28 @@ public class BackofficeController {
                 .body(page.getContent());
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/api/address/{id}")
-    public ResponseEntity<Address> addressById(@PathVariable("id") Integer id) throws AddressNotExistsException {
+    public ResponseEntity<Address> addressById(@PathVariable("id") Integer id,Authentication authentication) throws AddressNotExistsException {
+        if(! validateRol(authentication)){
         Address address = addressService.getAddressById(id);
         return ResponseEntity.ok(address);
     }
-
-    @PreAuthorize(value = "hasAuthority('CLIENT')")
-    @GetMapping(value = "/api/address2", produces = "application/json")
-    public ResponseEntity<List<Address>> allAddress2(Pageable pageable) {
-        Page page = addressService.allAddress(pageable);
-        return responseAddress(page);
+        else{
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
+    @GetMapping(value = "/api/address2", produces = "application/json")
+    public ResponseEntity<List<Address>> allAddress2(Pageable pageable, Authentication authentication) {
+        if (validateRol(authentication)){
+        Page page = addressService.allAddress(pageable);
+        return responseAddress(page);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+    //mirar
     @PreAuthorize(value = "hasAuthority('EMPLOYEE') or hasAuthority('CLIENT') ")
     @GetMapping( "/api/address/user/{id}")
     public ResponseEntity<Address> addressByIdUser(@PathVariable("id") Integer id, Authentication authentication) throws AddressNotExistsException {
@@ -152,26 +187,44 @@ public class BackofficeController {
         if (validateRol(authentication)){
             address2 = addressService.getAddressById(id);
         }
-
         return ResponseEntity.ok(address2);
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/api/address/{id}")
-    public ResponseEntity<?> deleteAddress(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<?> deleteAddress(@PathVariable(name = "id") Integer id,Authentication authentication) {
+        if(! validateRol(authentication)){
         return addressService.deleteById(id);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/api/address/{id}")
-    public ResponseEntity<?> updateAddress(@PathVariable("id") Integer id,@RequestBody AddressDto addressDto) throws AddressNotExistsException {
-        addressService.updateAddress(id,addressDto);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("")
-                .buildAndExpand(id)
-                .toUri();
-        return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
+    public ResponseEntity<?> updateAddress(@PathVariable("id") Integer id,@RequestBody AddressDto addressDto, Authentication authentication) throws AddressNotExistsException {
+        if(! validateRol(authentication)){
+            addressService.updateAddress(id,addressDto);
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("")
+                    .buildAndExpand(id)
+                    .toUri();
+            return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @PutMapping(value = "/address/{id}/user/{userId}", produces = "application/json")
+    public ResponseEntity<Usuario> addAddressToUser(@PathVariable("id") Integer id,@PathVariable("userId") Integer userId,Authentication authentication){
+        if ( !(validateRol(authentication))){
+            addressService.addUserToAddress(id,userId);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return null;
     }
 
     public boolean validate(Integer id,Authentication authentication) throws AddressNotExistsException {
@@ -195,16 +248,20 @@ public class BackofficeController {
     }
     /*-------------------------------------------------------------------------------------------------------------*/
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping(value = "/api/meter",consumes = "application/json")
-    public ResponseEntity newMeter(@RequestBody Meter meter){
-        Meter newMeasure = meterService.newMeter(meter);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(newMeasure.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+    public ResponseEntity newMeter(@RequestBody Meter meter,Authentication authentication){
+        if( ! validateRol(authentication)){
+            Meter newMeasure = meterService.newMeter(meter);
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(newMeasure.getId())
+                    .toUri();
+            return new ResponseEntity<>(location,(HttpStatus.CREATED));
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @PostMapping(value = "/measurements")
@@ -220,11 +277,16 @@ public class BackofficeController {
         return ResponseEntity.ok(Meter.builder().build());
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "/api/meter", produces = "application/json")
-    public ResponseEntity<List<Meter>> allMeters(Pageable pageable) {
-        Page page = meterService.allMeter(pageable);
-        return response(page);
+    public ResponseEntity<List<Meter>> allMeters(Pageable pageable,Authentication authentication) {
+        if( ! validateRol(authentication)){
+            Page page = meterService.allMeter(pageable);
+            return response(page);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
     }
 
     private ResponseEntity response(Page page) {
@@ -237,29 +299,42 @@ public class BackofficeController {
                 .body(page.getContent());
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping(value = "/api/meters/{id}", produces = "application/json")
-    public ResponseEntity<Meter> measureByCode(@PathVariable("id") Integer id) throws AddressNotExistsException {
-        Meter measure = meterService.getMeterById(id);
-        return ResponseEntity.ok(measure);
+    public ResponseEntity<Meter> meterById(@PathVariable("id") Integer id,Authentication authentication) throws MeterNotExistsException {
+        if( ! validateRol(authentication)){
+            Meter measure = meterService.getMeterById(id);
+            return ResponseEntity.ok(measure);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/api/meter/{id}")
-    public ResponseEntity<?> deleteMeter(@PathVariable(name = "id") Integer id) {
-        return meterService.deleteById(id);
+    public ResponseEntity<?> deleteMeter(@PathVariable(name = "id") Integer id,Authentication authentication) {
+        if( ! validateRol(authentication)){
+            return meterService.deleteById(id);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/api/meter/{id}")
-    public ResponseEntity<?> updateMeter(@PathVariable("id") Integer id,@RequestBody MeterDto meterDto) throws AddressNotExistsException {
-        meterService.updateMeter(id,meterDto);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("")
-                .buildAndExpand(id)
-                .toUri();
-        return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
+    public ResponseEntity<?> updateMeter(@PathVariable("id") Integer id,@RequestBody MeterDto meterDto,Authentication authentication) throws MeterNotExistsException {
+        if( ! validateRol(authentication)){
+            meterService.updateMeter(id,meterDto);
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("")
+                    .buildAndExpand(id)
+                    .toUri();
+            return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/

@@ -1,9 +1,6 @@
 package com.api.UDEE.utils;
 
-import com.api.UDEE.domain.Brand;
-import com.api.UDEE.domain.Model;
-import com.api.UDEE.domain.Rate;
-import com.api.UDEE.domain.Usuario;
+import com.api.UDEE.domain.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.data.domain.Page;
@@ -12,7 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 public class TestUtils {
@@ -80,13 +76,24 @@ public class TestUtils {
     }
     //aClientPage
 */
-   /* public static Usuario aUsuario(){
+    public static Usuario aUsuarioEmp(){
         Usuario u = new Usuario();
         u.setId(1);
         u.setUsername("nico");
         u.setPassword("1234");
+        u.setTypeUser(TypeUser.EMPLOYEE);
         return u;
-    }*/
+    }
+
+    public static Usuario aUsuarioClnt(){
+        Usuario u = new Usuario();
+        u.setId(2);
+        u.setUsername("nico");
+        u.setPassword("1234");
+        u.setTypeUser(TypeUser.CLIENT);
+        return u;
+    }
+
 /*
     public static Client aClient() {
         Client c = new Client();

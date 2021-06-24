@@ -43,7 +43,7 @@ public class BillController {
     }
 
     @PostMapping(value= "/api/bills",consumes = "application/json")
-    public ResponseEntity newCountry(@RequestBody Bill bill)  {
+    public ResponseEntity newBill(@RequestBody Bill bill)  {
 
         Bill newBill = billService.newBill(bill);
         URI location = ServletUriComponentsBuilder
@@ -51,7 +51,7 @@ public class BillController {
                 .path("/{id}")
                 .buildAndExpand(newBill.getId())
                 .toUri();
-        return ResponseEntity.created(location).build();
+        return new ResponseEntity<>(location,(HttpStatus.CREATED));
     }
 
     @GetMapping(value = "/api/bills")
