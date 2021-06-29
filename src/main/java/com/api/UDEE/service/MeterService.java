@@ -42,7 +42,8 @@ public class MeterService {
     }
 
     public Meter newMeter(Meter meter){
-            return meterRepository.save(meter);
+
+        return meterRepository.save(meter);
     }
 
     public Page allMeter(Pageable pageable)

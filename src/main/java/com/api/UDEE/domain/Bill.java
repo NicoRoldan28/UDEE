@@ -18,15 +18,11 @@ public class Bill {
     @Column(name = "id_bill")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user")
-    private Usuario userClient;
-
     @OneToOne
     @JoinColumn(name = "id_address")
     private Address address;
 
-    private Integer number_measurer;
+    private String number_measurer;
 
     private Integer measure_start;
 

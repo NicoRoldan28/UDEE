@@ -38,13 +38,7 @@ public class Usuario {
     TypeUser typeUser;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "userClient", cascade = CascadeType.ALL)
-    @Column(name = "id_bill")
-    private List<Bill> billList;
-
-    @JsonIgnore
     @OneToMany(mappedBy = "userClient",fetch = FetchType.EAGER)
     @Column(name = "address_id")
     private List<Address> addressList;
-
 }

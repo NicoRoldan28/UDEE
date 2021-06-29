@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RespsEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {AddressNotExistsException.class, BillNotExistsException.class, BrandNotExistsException.class,
-            MeterNotExistsException.class, ModelNotExistsException.class,RateNotExistsException.class,UsuarioNotExistsException.class})
+            MeterNotExistsException.class, ModelNotExistsException.class,RateNotExistsException.class,UsuarioNotExistsException.class,AddressNotExistsByUser.class})
     public ResponseEntity<Object> handleNotFound(RuntimeException ex){
         return new ResponseEntity<>(new MessageDto(ex.getLocalizedMessage()), HttpStatus.NOT_FOUND);
     }

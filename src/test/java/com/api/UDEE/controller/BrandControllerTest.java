@@ -2,15 +2,12 @@ package com.api.UDEE.controller;
 
 import com.api.UDEE.AbstractController;
 import com.api.UDEE.domain.Brand;
-import com.api.UDEE.domain.TypeUser;
 import com.api.UDEE.domain.Usuario;
-import com.api.UDEE.dto.UserDto;
 import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.service.BrandService;
 import com.api.UDEE.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

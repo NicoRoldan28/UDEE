@@ -3,8 +3,10 @@ package com.api.UDEE.controller;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.api.UDEE.Convertor.MeasurementsDtoToMeasurements;
 import com.api.UDEE.domain.Measurement;
 import com.api.UDEE.domain.Usuario;
+import com.api.UDEE.dto.MeasurementsDto;
 import com.api.UDEE.dto.UserDto;
 import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.service.MeasurementService;
@@ -13,14 +15,13 @@ import com.api.UDEE.service.UsuarioService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.core.convert.ConversionService;
 
 import java.util.List;
 
@@ -29,19 +30,13 @@ import java.util.List;
 public class MeasurementController {
 
     private MeasurementService measurementService;
-    private MeterService meterService;
-    private ModelMapper modelMapper;
-    private ConversionService conversionService;
     private UsuarioService usuarioService;
 
     private static final String EMPLOYEE = "EMPLOYEE";
 
     @Autowired
-    public MeasurementController(MeasurementService measurementService, MeterService meterService, ModelMapper modelMapper, ConversionService conversionService, UsuarioService usuarioService){
+    public MeasurementController(MeasurementService measurementService,UsuarioService usuarioService){
         this.measurementService=measurementService;
-        this.meterService=meterService;
-        this.modelMapper=modelMapper;
-        this.conversionService= conversionService;
         this.usuarioService=usuarioService;
     }
 
@@ -57,7 +52,7 @@ public class MeasurementController {
     }
 
     private ResponseEntity response(Page page) {
-
+        System.out.println(page.getContent());
         HttpStatus httpStatus = page.getContent().isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK;
         return ResponseEntity.
                 status(httpStatus).
@@ -74,16 +69,33 @@ public class MeasurementController {
 
     /*5) Consulta de mediciones por rango de fechas*/
     @GetMapping(value = "/dates", produces = "application/json")
-    public ResponseEntity<List<Measurement>> measurementsByDates(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
-                                                                 @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date to, Authentication authentication) throws AddressNotExistsException {
-        List<Measurement> listMeasurements = new ArrayList<Measurement>();
-        if (validateRol(authentication)){
-            listMeasurements= measurementService.allMeasurementsByDates(from,to);
-            return (ResponseEntity<List<Measurement>>) listMeasurements;
+    public ResponseEntity<List<MeasurementsDto>> measurementsByDates(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date since,
+                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date until, Authentication authentication, Pageable pageable) throws AddressNotExistsException {
+        List<MeasurementsDto> measurementList;
+        Page<MeasurementsDto> pages;
+        if (!validateRol(authentication)){
+            measurementList= measurementService.allMeasurementsByDatesByUser(((UserDto)authentication.getPrincipal()).getId(),since,until,pageable);
         }
         else {
-            return (ResponseEntity<List<Measurement>>) ResponseEntity.status(HttpStatus.FORBIDDEN);
+            measurementList= measurementService.allMeasurementsByDates(since,until,pageable);
         }
+        pages = new PageImpl<>(measurementList, pageable, measurementList.size());
+        return response(pages);
+    }
+
+    /*6) Consulta de mediciones de un domicilio por rango de fechas*/
+    @GetMapping(value = "/dates/address", produces = "application/json")
+    public ResponseEntity<List<MeasurementsDto>> measurementsByDatesByAddress(@RequestParam @PathVariable("idAddress") Integer idAddress,
+                                                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date since,
+                                                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date until,
+                                                                              Authentication authentication, Pageable pageable) throws AddressNotExistsException {
+        List<MeasurementsDto> measurementList=new ArrayList<>();
+        Page<MeasurementsDto> pages;
+        if (!validateRol(authentication)){
+            measurementList= measurementService.allMeasurementsByAddressForDates(idAddress,since,until);
+        }
+        pages = new PageImpl<>(measurementList, pageable, measurementList.size());
+        return response(pages);
     }
 
     public boolean validateRol(Authentication authentication) throws AddressNotExistsException {

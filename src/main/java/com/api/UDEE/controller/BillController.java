@@ -1,15 +1,20 @@
 package com.api.UDEE.controller;
 
+import com.api.UDEE.domain.Address;
 import com.api.UDEE.domain.Bill;
 import com.api.UDEE.domain.Usuario;
+import com.api.UDEE.dto.BillDto;
+import com.api.UDEE.dto.MeasurementsDto;
 import com.api.UDEE.dto.UserDto;
 import com.api.UDEE.exceptions.notFound.AddressNotExistsException;
 import com.api.UDEE.exceptions.notFound.BillNotExistsException;
+import com.api.UDEE.service.AddressService;
 import com.api.UDEE.service.BillService;
 import com.api.UDEE.service.UsuarioService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -25,20 +30,20 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-//@RequestMapping(value = "/api/bills")
 public class BillController {
 
     private BillService billService;
-    private ModelMapper modelMapper;
     private UsuarioService usuarioService;
+
+    @Autowired
+    private AddressService addressService;
 
     private static final String CLIENT = "CLIENT";
 
     @Autowired
-    public BillController(BillService billService, ModelMapper modelMapper,UsuarioService usuarioService){
+    public BillController(BillService billService,UsuarioService usuarioService){
 
         this.billService=billService;
-        this.modelMapper=modelMapper;
         this.usuarioService= usuarioService;
     }
 
@@ -60,6 +65,46 @@ public class BillController {
         return response(page);
     }
 
+    @GetMapping(value = "/api/bills/{id}", produces = "application/json")
+    public ResponseEntity<Bill> billByCode(@PathVariable("id") Integer id) throws BillNotExistsException {
+        Bill bill = billService.getBillById(id);
+        return ResponseEntity.ok(bill);
+    }
+
+    /*2) Consulta de facturas por rango de fechas.*/
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE') or hasAuthority('CLIENT') ")
+    @GetMapping(value = "/api/bills/dates", produces = "application/json")
+    public ResponseEntity<List<BillDto>> billByDates(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date since,
+                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date until, Authentication authentication, Pageable pageable ) throws AddressNotExistsException {
+        List<BillDto> listBills;
+        Page<BillDto> pages;
+        if (validateRol(authentication)){
+            listBills= billService.allBillsByDates(since,until,((UserDto)authentication.getPrincipal()).getId());
+            pages = new PageImpl<>(listBills, pageable, listBills.size());
+            return response(pages);
+        }
+        else {
+            return (ResponseEntity<List<BillDto>>) ResponseEntity.status(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /*3) Consulta de deuda (Facturas impagas)*/
+    @GetMapping(value = "/api/bills/unpaid", produces = "application/json")
+    public ResponseEntity<List<BillDto>> billUnpaid(@RequestParam @PathVariable Integer idAddress,Authentication authentication, Pageable pageable) throws NullPointerException {
+
+        Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
+        Address address = addressService.getAddressById(idAddress);
+        List<BillDto> list;
+            if (validateRol(authentication)){
+                list= (List<BillDto>) billService.allBillUnpaidByUserAndAddress(((UserDto)authentication.getPrincipal()).getId(),idAddress);
+                    Page<BillDto> pages = new PageImpl<BillDto>(list, pageable, list.size());
+                    return response(pages);
+            }
+            else {
+                return (ResponseEntity<List<BillDto>>) ResponseEntity.status(HttpStatus.FORBIDDEN);
+            }
+    }
+
     private ResponseEntity response(Page page) {
 
         HttpStatus httpStatus = page.getContent().isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK;
@@ -68,42 +113,6 @@ public class BillController {
                 header("X-Total-Count", Long.toString(page.getTotalElements()))
                 .header("X-Total-Pages", Long.toString(page.getTotalPages()))
                 .body(page.getContent());
-    }
-
-    @GetMapping(value = "/api/bills/{id}", produces = "application/json")
-    public ResponseEntity<Bill> billByCode(@PathVariable("id") Integer id) throws BillNotExistsException {
-        Bill bill = billService.getBillById(id);
-        return ResponseEntity.ok(bill);
-    }
-
-
-    /*2) Consulta de facturas por rango de fechas.*/
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE') or hasAuthority('CLIENT') ")
-    @GetMapping(value = "/api/bills/dates", produces = "application/json")
-    public ResponseEntity<List<Bill>> billByDates(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
-                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date to, Authentication authentication ) throws AddressNotExistsException {
-        Bill bill= new Bill();
-        List<Bill> listBills = new ArrayList<Bill>();
-        if (validateRol(authentication)){
-            listBills= billService.allBillsByDates(from,to,((UserDto)authentication.getPrincipal()).getId());
-            return (ResponseEntity<List<Bill>>) listBills;
-        }
-        else {
-            return (ResponseEntity<List<Bill>>) ResponseEntity.status(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /*3) Consulta de deuda (Facturas impagas)*/
-    @GetMapping(value = "/api/bills/unpaid", produces = "application/json")
-    public ResponseEntity<List<Bill>> billUnpaid(Authentication authentication) throws AddressNotExistsException {
-        List<Bill> listBill = new ArrayList<Bill>();
-        if (validateRol(authentication)){
-            listBill= billService.allBillUnpaid(((UserDto)authentication.getPrincipal()).getId());
-            return (ResponseEntity<List<Bill>>) listBill;
-        }
-        else {
-            return (ResponseEntity<List<Bill>>) ResponseEntity.status(HttpStatus.FORBIDDEN);
-        }
     }
 
     public boolean validateRol(Authentication authentication) throws AddressNotExistsException {

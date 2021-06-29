@@ -84,7 +84,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping(value = "newUser",consumes = "application/json")
+    @PostMapping(value = "user",consumes = "application/json")
     public ResponseEntity newClient(@RequestBody Usuario user){
         Usuario newUser = usuarioService.newUser(user);
         URI location = ServletUriComponentsBuilder
@@ -94,16 +94,6 @@ public class UsuarioController {
                 .toUri();
         return new ResponseEntity<>(location,(HttpStatus.CREATED));
     }
-    /*
-    commentService.updateComment(id,commentDto);
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("")
-                    .buildAndExpand(id)
-                    .toUri();
-            return new ResponseEntity<>(location,(HttpStatus.ACCEPTED));
-    *
-    * */
 
     @GetMapping("/users")
     public ResponseEntity<List<Usuario>> allUsers(Pageable pageable,Authentication authentication) {
@@ -136,8 +126,6 @@ public class UsuarioController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
-
 
     public boolean validateRol(Authentication authentication) throws AddressNotExistsException {
         boolean isUser= false;

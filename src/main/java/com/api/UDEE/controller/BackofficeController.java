@@ -20,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -179,7 +178,7 @@ public class BackofficeController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-    //mirar
+
     @PreAuthorize(value = "hasAuthority('EMPLOYEE') or hasAuthority('CLIENT') ")
     @GetMapping( "/api/address/user/{id}")
     public ResponseEntity<Address> addressByIdUser(@PathVariable("id") Integer id, Authentication authentication) throws AddressNotExistsException {
@@ -227,18 +226,7 @@ public class BackofficeController {
         return null;
     }
 
-    public boolean validate(Integer id,Authentication authentication) throws AddressNotExistsException {
-        boolean validate= false;
-
-        Address address = this.addressService.getAddressById(id);
-        Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
-        if (address.getUserClient().getId()==user.getId()){
-            validate=true;
-        }
-        return validate;
-    }
-
-    public boolean validateRol(Authentication authentication) throws AddressNotExistsException {
+    public boolean validateRol(Authentication authentication){
         boolean isUser= false;
         Usuario user = usuarioService.getUserById(((UserDto)authentication.getPrincipal()).getId());
         if(user.getTypeUser().getName().equals(CLIENT)){
@@ -286,7 +274,6 @@ public class BackofficeController {
         else{
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
     }
 
     private ResponseEntity response(Page page) {
@@ -334,16 +321,5 @@ public class BackofficeController {
         else{
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
     }
-
-    /*-------------------------------------------------------------------------------------------------------------*/
-
-    @GetMapping(value = "/api/bills/unpaid/{idClient}/address{idAddress}", produces = "application/json")
-    public ResponseEntity<List<Bill>> billUnpaid(Authentication authentication,@PathVariable("idClient") Integer idClient,@PathVariable("idAddress") Integer idAddress) throws AddressNotExistsException {
-        List<Bill> listBill = new ArrayList<Bill>();
-        listBill= billService.allBillUnpaidByUserAndAddress(idClient,idAddress);
-        return (ResponseEntity<List<Bill>>) listBill;
-    }
-
 }
